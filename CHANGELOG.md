@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.0] - 2026-06-12
+
+### Improved
+- `/watt:quickstart` now ends with a real audience you built. Pick a starter audience — each showing a different way Watt can build one — or describe your own with help shaping the description, watch the signals behind it become an audience with a measured size, then export it, see who's in it, or keep exploring. The close points to `/watt:help` for the other ways in, like starting from a customer list you own.
+
+### Fixed
+- Signal scores during an audience build are cleaner — a size-related factor was being counted twice, which could distort the rankings you curate by.
+
 ## [0.1.0] - 2026-06-11
 
 Initial public release.

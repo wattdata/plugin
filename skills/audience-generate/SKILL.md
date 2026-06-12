@@ -24,7 +24,7 @@ One spine, many ways to compose. This skill owns the shared spine every build sh
 
 You own the conversation, the elicitation, the scoring dispatch, and the rendering; the heavy work is dispatched. Pass signals to advisors by `trait_hash`, never display name alone.
 
-- **Called by:** the `/watt:audience` router — often carrying an `/watt:explore` signal pool as the seed (see Entry).
+- **Called by:** the `/watt:audience` router — often carrying an `/watt:explore` signal pool as the seed (see Entry); and `quickstart` — which drives this flow as written for a first-run user, arriving with the brief and landing mode already settled (route silently on them) and delivering the landing offer as its junction.
 - **Dispatches** (the shared discovery — the same advisors explore uses, here ending in a built audience):
   - **`signal-finder`** — one committed angle → validated candidate signals with evidence.
   - **`signal-profiler`** — scores the gathered signals against the model (relevance · freshness · rarity/specificity · breadth/size · coverage), grounded on the brief, so the user can see how each stacks up and curate. Traits-only — it never touches a set of people.
@@ -75,9 +75,11 @@ Read the brief as its **angles** (the distinct concepts inside it, in the user's
 
 Dispatch **`signal-profiler`** to score the gathered candidates — by `trait_hash`, with the **brief as the grounding frame** (so relevance is comparable across angles) and a **role-appropriate `weights` vector**, because each role wants a different kind of signal. Score **once per non-empty role** (`signal-profiler` takes one weight vector per call):
 
-- **core — the targeting pool.** `relevance` leads; `specificity`/`rarity` next (distinctiveness is what separates *targeting* from raw reach — a trait nearly everyone carries targets no one); a light `freshness` positive; and a **breadth lean the objective leaf sets** — passed as the **`breadth` element of this role's `weights` vector** in the `signal-profiler` dispatch (`-search` tunes it from the landing mode — by the band's scale in band mode, strongly breadth-positive in max-reach mode). **Size stays out of the score** — the strategy worker converges to the target by measuring reach, so scoring size too would double-count it.
+- **core — the targeting pool.** `relevance` leads; a light `freshness` positive; and **one signed size-family axis — the `breadth` element of this role's `weights` vector, the lean the objective leaf sets** in the `signal-profiler` dispatch (`-search` tunes it from the landing mode — negative when the landing wants distinctive, narrow signals, because distinctiveness is what separates *targeting* from raw reach — a trait nearly everyone carries targets no one; by the band's scale in band mode; strongly positive in max-reach mode). **Size stays out of the score** — the strategy worker converges to the target by measuring reach, so scoring size too would double-count it.
 - **must-have — the gates.** Broad and on-brief (`breadth` + `relevance`): a narrow gate quietly becomes the whole definition.
-- **exclusion — the removals.** Precise (`specificity` + `relevance`, breadth negative): a broad exclusion over-cuts.
+- **exclusion — the removals.** Precise (`specificity` + `relevance`): a broad exclusion over-cuts.
+
+**At most one size-family axis per vector.** `rarity` / `specificity` / `breadth` / `size` are views of one fact (`specificity = 1 − breadth` over a shared universe — see `context/signal-metrics.md`); a `weights` vector that names two of them scores that fact twice, and the model flags it (`collinearity_warning`). The signed `breadth` element carries the whole lean — distinctiveness is its negative direction, never a second axis.
 
 `signal-profiler` runs the scoring model (`scripts/signal_profile.py`) and returns each signal's feature vector (relevance · freshness · rarity/specificity · breadth/size · coverage) and a composite `score` under its role's weights — the read of how each pool stacks up. The model owns the math; never hand-score a signal, and run nothing inline — `signal-profiler` is the single scoring path. **The profiler's per-signal `raw` fields ride into the working set and onward to the strategy dispatch** — each working-set signal carries `trait_hash`, `name`, `role`, `score`, `size`, plus `prevalence` and `freshness` from the profile: `strategy-broad` derives its ungated universe from `prevalence`, and `strategy-lift` breaks ranking ties on `freshness`, so dropping either field silently degrades those composes.
 

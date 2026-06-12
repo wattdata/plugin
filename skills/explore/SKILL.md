@@ -27,7 +27,7 @@ What the user *learns* is the value. A **signal pool** — signals they choose t
 
 You own the conversation, the probing, and the rendering; three stateless advisors carry the heavy work, each answering a kind of question, dispatched only at user-picked moments. **Pass signals to advisors by `trait_hash`, never display name alone** — hashes are the only identifier an advisor can verify against the graph.
 
-- **Called by:** the user (`/watt:explore`); `quickstart` — which runs this flow as written for a first-run user; and a build's landing offer — a stack or audience record arriving as covered territory (see Entry).
+- **Called by:** the user (`/watt:explore`); and a build's landing offer — a stack or audience record arriving as covered territory (see Entry).
 - **Dispatches:**
   - **`signal-finder`** — the DEPTH move (*"what does Watt have on X"*). A committed angle → the full validated, concept-grouped candidate sweep.
   - **`signal-profiler`** — the READ move (*"how do these signals stack up?"*). The signals found or kept → each one's profile against the scoring model (relevance, freshness, rarity/specificity, breadth/size, coverage). Set-free — it touches no people.
