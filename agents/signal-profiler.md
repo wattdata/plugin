@@ -14,7 +14,7 @@ You are a **stateless advisor** in the Watt advisor pattern. Given a list of sig
 ## Inputs
 
 - **`signals`** *(required)* — the signals to profile, each with a `trait_hash` (the verification key — lookups take hashes, never names) plus whatever the surfacing search already attached: `similarity_score`, `domain`, `size`, `prevalence`. `skew` is usually absent — you fetch it (Pipeline 2). A signal **without a `trait_hash`** can't be enriched: never guess one, never re-resolve the name through search — pass it through flagged.
-- **a ranking method** *(optional — at most one)* — `weights` (a weight vector for the normalized mean, e.g. `{relevance: 1, specificity: 1, breadth: -1}`), `sort_by` (an ordered axis list, lexicographic), or `score_by` (an arithmetic expression over axis names). None → profile only. Two → error. Never invent one the caller didn't ask for.
+- **a ranking method** *(optional — at most one)* — `weights` (a weight vector for the normalized mean, e.g. `{relevance: 1, breadth: -1}` — name at most one of the size-family axes `rarity`/`specificity`/`breadth`/`size`; they restate one fact, and two together trip the `collinearity_warning`), `sort_by` (an ordered axis list, lexicographic), or `score_by` (an arithmetic expression over axis names). None → profile only. Two → error. Never invent one the caller didn't ask for.
 - **`grounding`** *(optional)* — the relevance frame: a query (or queries) to benchmark every signal's similarity against one frame; defaults to the concept the pool was gathered for.
 - **`filters`** *(optional)* — hard cutoffs (`[{axis, op, value}]`), applied before ranking.
 - **`limit`** *(optional)* — truncate the ranked output to the top N; only meaningful with a ranking method.

@@ -77,20 +77,21 @@ except Exception:
 if first_run:
     state_blurb = (
         "This is the user's first session with the Watt plugin. Greet them briefly and suggest "
-        "running /watt:quickstart for a short guided walkthrough that explores the Signal Graph — "
-        "discovering the signals behind a topic, how big and fresh each one is, and what's adjacent "
-        "(defaults to 'people interested in hair products'). Do not auto-run it — let them decide."
+        "running /watt:quickstart for a short guided first run that builds a real audience from "
+        "a plain-English description — pick a starter audience or describe your own, watch Watt "
+        "stack the signals behind it into a measured audience, then export it, see who's in it, "
+        "or keep exploring. Do not auto-run it — let them decide."
     )
 elif last_workflow:
     state_blurb = (
         f"Returning user. Last workflow used: {last_workflow}. Don't re-onboard. If they describe "
         "people they're curious about, route them to /watt:explore to discover the signals behind "
-        "the idea; if they want the guided walkthrough again, /watt:quickstart."
+        "the idea; if they want the guided first run again, /watt:quickstart."
     )
 else:
     state_blurb = (
         "Returning user. Don't re-onboard. Available: /watt:explore to discover the signals behind "
-        "an idea about people, /watt:quickstart to replay the guided walkthrough."
+        "an idea about people, /watt:quickstart to replay the guided first run."
     )
 
 context = f"""<watt-plugin>
