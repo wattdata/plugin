@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "watt",
+  "displayName": "Watt",
+  "description": "Build custom audiences in minutes by blending your subject-matter expertise and first-party data with raw signals. Do what used to take teams of data engineers, scientists, and analysts, using Watt's Signal Graph. Traverse petabytes of raw signals in seconds to find your alpha.",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Watt",
+    "url": "https://wattdata.ai"
+  },
+  "homepage": "https://wattdata.ai",
+  "repository": "https://github.com/wattdata/plugin",
+  "keywords": [
+    "signals",
+    "discovery",
+    "data",
+    "explore",
+    "audience",
+    "marketing",
+    "mcp",
+    "watt"
+  ]
+}

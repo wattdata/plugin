@@ -1,0 +1,9 @@
+.DS_Store
+*.log
+*.pyc
+__pycache__/
+dist/
+*.zip
+
+# Local Claude Code settings (personal, not for distribution)
+.claude/settings.local.json

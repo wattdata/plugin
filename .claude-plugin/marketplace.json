@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "watt",
+  "owner": {
+    "name": "Watt",
+    "url": "https://wattdata.ai"
+  },
+  "description": "Watt's official plugin marketplace.",
+  "plugins": [
+    {
+      "name": "watt",
+      "source": "./",
+      "description": "Build custom audiences in minutes by blending your subject-matter expertise and first-party data with raw signals. Do what used to take teams of data engineers, scientists, and analysts, using Watt's Signal Graph. Traverse petabytes of raw signals in seconds to find your alpha."
+    }
+  ]
+}

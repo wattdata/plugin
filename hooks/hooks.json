@@ -1,0 +1,206 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.py\"",
+            "statusMessage": "Preparing your Watt session…"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "mcp__.*__show_widget$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/render-guard.py\"",
+            "statusMessage": "Watt: holding the render to the brand…"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__.*__(entity_resolve|resolve_and_enrich_rows)$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/call-shape-guard.py\"",
+            "statusMessage": "Watt: checking the resolve call shape…"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "mcp__.*__read_me$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/render-guard.py\"",
+            "statusMessage": "Watt: loading the render contract…"
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "matcher": "signal-finder",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/subagent-activity.py\" start",
+            "statusMessage": "Watt: searching the graph for signals…"
+          }
+        ]
+      },
+      {
+        "matcher": "signal-profiler",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/subagent-activity.py\" start",
+            "statusMessage": "Watt: scoring the signals against the model…"
+          }
+        ]
+      },
+      {
+        "matcher": "signal-recommender",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/subagent-activity.py\" start",
+            "statusMessage": "Watt: scouting what's adjacent…"
+          }
+        ]
+      },
+      {
+        "matcher": "strategy-greedy",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/subagent-activity.py\" start",
+            "statusMessage": "Watt: composing toward your size band…"
+          }
+        ]
+      },
+      {
+        "matcher": "strategy-broad",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/subagent-activity.py\" start",
+            "statusMessage": "Watt: composing the widest credible audience…"
+          }
+        ]
+      },
+      {
+        "matcher": "strategy-lift",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/subagent-activity.py\" start",
+            "statusMessage": "Watt: ranking signals by lift over your base…"
+          }
+        ]
+      },
+      {
+        "matcher": "strategy-group",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/subagent-activity.py\" start",
+            "statusMessage": "Watt: ranking the top groups in your audience…"
+          }
+        ]
+      },
+      {
+        "matcher": "strategy-traverse",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/subagent-activity.py\" start",
+            "statusMessage": "Watt: crossing the employment graph to the related entities…"
+          }
+        ]
+      },
+      {
+        "matcher": "strategy-expand",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/subagent-activity.py\" start",
+            "statusMessage": "Watt: expanding your list to its widest match…"
+          }
+        ]
+      },
+      {
+        "matcher": "strategy-overlay",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/subagent-activity.py\" start",
+            "statusMessage": "Watt: scoring your list against the signal pool…"
+          }
+        ]
+      },
+      {
+        "matcher": "audience-activator",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/subagent-activity.py\" start",
+            "statusMessage": "Watt: preparing your audience export…"
+          }
+        ]
+      },
+      {
+        "matcher": "audience-profiler",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/subagent-activity.py\" start",
+            "statusMessage": "Watt: reading who this audience reaches…"
+          }
+        ]
+      },
+      {
+        "matcher": "audience-resolver",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/subagent-activity.py\" start",
+            "statusMessage": "Watt: resolving your list to entities…"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": "signal-finder|signal-profiler|signal-recommender|strategy-greedy|strategy-broad|strategy-lift|strategy-group|strategy-traverse|strategy-expand|strategy-overlay|audience-activator|audience-profiler|audience-resolver",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/subagent-activity.py\" stop",
+            "statusMessage": "Watt advisor wrapping up…"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "auth_success",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/auth-success.py\"",
+            "statusMessage": "Confirming your Watt sign-in…"
+          }
+        ]
+      }
+    ]
+  }
+}
