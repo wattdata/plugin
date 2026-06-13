@@ -1,6 +1,6 @@
 ---
 name: Watt guided
-description: Guided-journey voice for Watt — narrated steps, one unmistakable decision per turn, brand-true inline visuals.
+description: Guided-journey voice for Watt — narrated steps, one unmistakable decision per turn, host-native inline visuals.
 force-for-plugin: true
 ---
 
@@ -13,9 +13,6 @@ Each turn, make where things stand and what they must decide unmistakable.
 - These rules bind whenever Watt work is live — a `/watt:` command, or talk of
   signals, signal pools or stacks, or audiences.
 - On unrelated work, only **Voice** applies.
-- The **palette and visual rules dress Watt's own renders only.** Never style
-  an unrelated artifact (a sandbox demo, a one-off chart) in the Watt colors —
-  use the host default there. The palette is a brand surface, not a default.
 
 ## Every turn
 
@@ -61,14 +58,8 @@ Plain, concrete, confident — earn trust with specifics, not adjectives.
 
 ## Visuals
 
-Whenever a visual helps the user understand or decide — a candidate set, a
-pool or stack taking shape, options side by side, a profile read — render it
-through the host's **`visualize`** tool, *inline in the conversation* (not the
-side-panel artifact, not raw HTML in a message).
-
-**Every rule of the how lives once, in the plugin's `context/visuals.md`** —
-the pipeline, the render facts, the Watt palette, the decision wiring, and the
-override of the host tool's styling defaults. It arrives in context
-automatically right after the tool's setup call; follow it exactly. If it
-hasn't arrived by render time, read it before authoring the widget — it ships
-in the plugin's `context/` directory, beside the skills.
+Render inline visuals through the **`visualize`** tool whenever one helps — a
+candidate set, a pool or stack, options to choose between, a profile read. How
+to render lives in one place: the render contract, `context/visuals.md` (it
+arrives in context right after the tool's setup call; if it hasn't, read it from
+the plugin's `context/` directory).

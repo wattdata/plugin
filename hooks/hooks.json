@@ -14,16 +14,6 @@
     ],
     "PreToolUse": [
       {
-        "matcher": "mcp__.*__show_widget$",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/render-guard.py\"",
-            "statusMessage": "Watt: holding the render to the brand…"
-          }
-        ]
-      },
-      {
         "matcher": "mcp__.*__(entity_resolve|resolve_and_enrich_rows)$",
         "hooks": [
           {

@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.4.0] - 2026-06-13
+
+### Improved
+- Interactive visuals can use the full range of the host's controls, so they render more consistently.
+
+## [0.3.0] - 2026-06-12
+
+### Improved
+- Watt's in-chat visuals now adapt to your light or dark theme — they sit cleanly in whichever you're using, with text that stays easy to read, instead of always rendering on a fixed dark card.
+
 ## [0.2.0] - 2026-06-12
 
 ### Improved
