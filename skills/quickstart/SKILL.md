@@ -57,7 +57,7 @@ Brief and landing mode in hand, **run the `/watt:audience` build flow** — the 
 
 ### 3 — Land the payoff
 
-The leaf lands the audience: the stack rendered, the record quietly beneath, the measured reach leading. That number — "your picks reach 2.4M people" — is the payoff, and it's theirs: their description, their keeps, measured for real. Let the leaf's landing render carry it; add nothing but warmth.
+The leaf lands the audience: the stack rendered, the record saved to its file, the measured reach leading. That number — "your picks reach 2.4M people" — is the payoff, and it's theirs: their description, their keeps, measured for real. Let the leaf's landing render carry it; add nothing but warmth.
 
 ### 4 — The junction — teach back, then hand off
 

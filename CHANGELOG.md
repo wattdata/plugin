@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.5.0] - 2026-06-15
+
+### New
+- Every audience or signal set you build is saved to a CSV file you can open in any spreadsheet, keep, reopen, or share — the full composition in one place.
+
 ## [0.4.0] - 2026-06-13
 
 ### Improved
