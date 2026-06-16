@@ -1,0 +1,42 @@
+# Cut the GitHub release when a merge to main bumps the plugin version.
+#
+# The deliberate act here is the MERGE of a release PR; this turns that merge
+# into a release automatically. The notes are the matching CHANGELOG.md block,
+# sliced by .github/changelog_extract.py — never hand-typed, and an empty or
+# missing section fails the job loudly. Idempotent: it fires only when
+# .claude-plugin/plugin.json's version changed in the push AND no release for
+# that version exists yet, so ordinary merges (and re-runs) do nothing.
+
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 2  # need HEAD~1 to compare the version line
+
+      - name: Cut the release on a version bump
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="$(python3 -c "import json; print(json.load(open('.claude-plugin/plugin.json'))['version'])")"
+          prev="$(git show HEAD~1:.claude-plugin/plugin.json 2>/dev/null | python3 -c "import json,sys; print(json.load(sys.stdin).get('version',''))" 2>/dev/null || true)"
+          if [ "$version" = "$prev" ]; then
+            echo "plugin.json version unchanged ($version) — no release."
+            exit 0
+          fi
+          if gh release view "v$version" >/dev/null 2>&1; then
+            echo "release v$version already exists — nothing to do."
+            exit 0
+          fi
+          notes="$(python3 .github/changelog_extract.py "$version" CHANGELOG.md)"
+          gh release create "v$version" --target "$GITHUB_SHA" --title "v$version" --notes "$notes"
