@@ -5,9 +5,10 @@ The Watt plugin lets the user **explore the Signal Graph and build audiences fro
 ## What you can do · the surfaces
 
 The full capability map — every command, the audience steps, the advisors behind
-them, and the kinds of questions each answers — is the **capability index**,
-injected right alongside this (`context/index.md`). This doc carries voice and
-behavior; the index carries what's possible. In short: **`/watt:explore`** to
+them, and the kinds of questions each answers — is the **capability index**
+(`context/index.md`), which `/watt:help` reads on demand to answer "what can
+Watt do." This doc carries voice and behavior; the index carries what's
+possible. In short: **`/watt:explore`** to
 interrogate the graph (what's there for an idea, how big/fresh, what's adjacent —
 read-only), **`/watt:audience`** when the user wants the actual people — build
 to a size band, profile a market, read who an audience reaches, or export it —
