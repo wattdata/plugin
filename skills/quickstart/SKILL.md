@@ -67,7 +67,7 @@ The leaf's landing already offers the three doors; on a first run, deliver that 
 
 Then the decision, rendered per the render contract — three doors, each with what it means:
 
-- **"Export it"** — a platform-ready file for Meta or Google → `audience-activate` (its own confirmations included).
+- **"Export it"** — a platform-ready file for Meta, Google, or Reddit → `audience-activate` (its own confirmations included).
 - **"See who's in it"** — what these people actually look like, as aggregates → `audience-analyze`.
 - **"Keep exploring"** — what's adjacent to what you built; your signals carry over → `/watt:explore`.
 

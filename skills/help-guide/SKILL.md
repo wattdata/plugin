@@ -31,7 +31,7 @@ One answer, one render, one decision — then stop.
 
 ### 1 — Answer from the capability map
 
-Answer directly and concretely from the capability index and orientation, in the customer's terms — name the real surfaces by their command (`/watt:explore` to interrogate the graph; `/watt:audience` to build a sized audience, profile a market, read who an audience reaches, or export it for Meta or Google) and the real limits (US-only, person/adults-only, employer/job-title not a defining target, Meta + Google export). Name the **commands** — the user's interface — never the internal step names behind them. **Don't invent a capability the index doesn't list** — if it's not there, say so and offer the closest real thing or a human.
+Answer directly and concretely from the capability index and orientation, in the customer's terms — name the real surfaces by their command (`/watt:explore` to interrogate the graph; `/watt:audience` to build a sized audience, profile a market, read who an audience reaches, or export it for Meta, Google, or Reddit) and the real limits (US-only, person/adults-only, employer/job-title not a defining target, Meta + Google + Reddit export). Name the **commands** — the user's interface — never the internal step names behind them. **Don't invent a capability the index doesn't list** — if it's not there, say so and offer the closest real thing or a human.
 
 ### 2 — Render the capability view
 

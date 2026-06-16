@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.6.0] - 2026-06-15
+
+### New
+- Export an audience to Reddit as a platform-ready file — pick Reddit at export and `/watt:audience` writes the upload file, with the same scale-and-identifier confirmation as Meta and Google.
+
 ## [0.5.0] - 2026-06-15
 
 ### New
