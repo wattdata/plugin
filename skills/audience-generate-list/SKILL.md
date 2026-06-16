@@ -112,30 +112,35 @@ Put the counts on screen — **submitted vs. matched** — and say plainly that 
 
 ### 5 — Emit the roster
 
-Emit the matched set in the **shared roster record** frame — the same serialization the crossing roster from `audience-generate-search` uses, so `audience-activate` and `audience-analyze` consume it identically. The classification columns differ by play; render the matched set as the inline visual (per the render contract) — the count, the classification, the coverage — with the roster record riding quietly beneath as the durable carrier:
+Emit the matched set in the **shared roster record** frame — the same serialization the crossing roster from `audience-generate-search` uses, so `audience-activate` and `audience-analyze` consume it identically. The classification columns differ by play; render the matched set as the inline visual (per the render contract) — the count, the classification, the coverage — and write the roster record per the record contract (`context/record.md`):
 
 - **resolve-only** — columns `entity_id, source_provenance` (value `seed`); no rank, no groups, no score.
 
 ```
-Roster — matched from your customer list · resolve-only
-matched set (unordered) — 4,200 people:
-  source_provenance: seed (resolved from your list)
-matched: 4,200 of 5,000 identifiers submitted   (below floor: 350)
-roster: workflow://…/roster.csv   columns: entity_id, source_provenance
+# Watt record · kind: roster · play: resolve-only · audience: matched from your customer list
+# matched: 4,200 of 5,000 identifiers submitted (below floor: 350)
+# roster_uri: workflow://…/roster.csv    entity_type: person
+entity_id,source_provenance
+e_8821,seed
+e_4410,seed
+…    (sample; full set behind roster_uri)
 ```
 
 - **expand** — columns `entity_id, match_confidence, match_criteria_count` (the worker's roster, verbatim); no rank, no groups. The confidence + corroboration columns are the audit trail for *why each entity is in the set*, and must survive downstream.
 
 ```
-Roster — expanded from your list · widest match · floor 0
-matched set (unordered) — 6,300 entities:
-  match_confidence — Noisy-OR per entity (1.0 strong … low = weak single match)
-  match_criteria_count — how many of your identifiers corroborated it
-matched: 6,300 entities from 5,000 identifiers submitted   (below floor: 0)
-roster: workflow://…/roster.csv   columns: entity_id, match_confidence, match_criteria_count
+# Watt record · kind: roster · play: expand · audience: expanded from your list · widest match · floor 0
+# match_confidence — Noisy-OR per entity (1.0 strong … low = weak single match)
+# match_criteria_count — how many of your identifiers corroborated it
+# matched: 6,300 entities from 5,000 identifiers submitted (below floor: 0)
+# roster_uri: workflow://…/roster.csv    entity_type: person
+entity_id,match_confidence,match_criteria_count
+e_8821,0.95,3
+e_4410,0.88,2
+…    (sample; full set behind roster_uri)
 ```
 
-The `roster_uri` carries the entity-ID set (IDs only — never contact data); the coverage line stays honest about how the count relates to what was submitted. The roster record is the canonical serialization — its columns must survive downstream, the shape `audience-activate` and `audience-analyze` consume.
+The `roster_uri` carries the full entity-ID set (IDs only — never contact data) as a CSV of these same columns; the rows in the record are a sample, and the `# matched:` line stays honest about how the count relates to what was submitted. The roster record file is the canonical serialization — its column header row must survive downstream, the shape `audience-activate` and `audience-analyze` consume.
 
 ### 6 — Hand off
 
@@ -165,19 +170,16 @@ On the go, dispatch `audience-profiler` in **mode B** (`entity_set`) with the se
 - **Durable identity, by lift** — the interests, affinities, demographics, and life-stage that stably set the seed apart from the world. Lift surfaces these reliably.
 - **Top intents by reach within the seed** — the intent layer. Intent traits have tiny membership, so they never clear the lift floor; reach-rank (how common each intent is *inside* the seed) is how they surface. Say so plainly — these are the seed's *common* intents and may include generic ones; tuning prunes them.
 
-Narrate the read plainly ("Your 4,200 customers over-index hardest on X and Y; their most common in-market intents are Z…"). Render the result as the **tunable signal pool** (per the render contract) — each signal with its lift or reach, size, freshness, and which half it came from — the signal-pool record beneath as the durable carrier, the keep/drop **tuning** the decision the render lands. The user **tunes**: keep the portable signals, drop the self-referential ones (owning the product, the brand's own app) and the generic high-reach intents that describe everyone. This is the decision beat — the turn ends at the tuned pool; re-emit the record on every change.
+Narrate the read plainly ("Your 4,200 customers over-index hardest on X and Y; their most common in-market intents are Z…"). Render the result as the **tunable signal pool** (per the render contract) — each signal with its lift or reach, size, freshness, and which half it came from — and write the signal-pool record per the record contract (`context/record.md`); the keep/drop **tuning** is the decision the render lands. The user **tunes**: keep the portable signals, drop the self-referential ones (owning the product, the brand's own app) and the generic high-reach intents that describe everyone. This is the decision beat — the turn ends at the tuned pool.
 
 ```
-Signal pool — lookalike from your customer seed · 4,200 people profiled
-durable identity (by lift vs. the world):
-  <signal name> — lift 7.2× · ~410K · fresh   [interest]   trait_hash: …
-  …
-intent layer (by reach within the seed):
-  <intent name> — 31% of seed · ~1.2M · fresh   [intent]   trait_hash: …
-  …
-tuned: kept N, dropped M
-next: carry into a compose, or read   ·   seed not suppressed from a later compose
-pool: workflow://…   (signal, half, lift-or-reach, size, freshness, trait_hash per row)
+# Watt record · kind: pool · play: lookalike · audience: lookalike from your customer seed · 4,200 people profiled
+# tuned: kept N, dropped M    next: carry into a compose, or read · seed not suppressed from a later compose
+# half — identity = by lift vs. the world · intent = by reach within the seed
+# pool_uri: workflow://…
+half,name,lift_or_reach,size,freshness,domain,trait_hash
+identity,<signal name>,lift 7.2×,~410K,fresh,interest,…
+intent,<intent name>,31% of seed,~1.2M,fresh,intent,…
 ```
 
 ### L3 — Hand off the pool (lookalike)
@@ -190,7 +192,7 @@ On the user's go, resolve the list to the **matched set** via `audience-resolver
 
 ### O2 — Elicit the brief for the scoring pool, discover, and score it (overlay)
 
-Overlay needs a **brief** — but it defines *what to score by*, never who's on the list. Ask: *"What should I score your list by — in-market for what, engaged with what, interested in what?"* Read it as angles and, one angle per beat, dispatch `signal-finder` (narrow scope, the population's entity type — `person` for a list; a crossed *business* roster re-entering discovers business-side signals, `entity_type: "business"`) for the candidate signals, then `signal-profiler` to score them (by `trait_hash`, the brief as the grounding frame) — the parent's discover→score procedure, composed with verbatim. Render the scored pool as the inline visual (per the render contract) — name · what it means · ~size · relevance · freshness · score — the fenced pool record beneath as the durable carrier. End the turn on the pick: which signals make up the pool, and — if the operator wants — a **per-signal weight** (default every signal `1`, so the default score is a plain count of signals expressed). Nothing is scored until the user approves the pool.
+Overlay needs a **brief** — but it defines *what to score by*, never who's on the list. Ask: *"What should I score your list by — in-market for what, engaged with what, interested in what?"* Read it as angles and, one angle per beat, dispatch `signal-finder` (narrow scope, the population's entity type — `person` for a list; a crossed *business* roster re-entering discovers business-side signals, `entity_type: "business"`) for the candidate signals, then `signal-profiler` to score them (by `trait_hash`, the brief as the grounding frame) — the parent's discover→score procedure, composed with verbatim. Render the scored pool as the inline visual (per the render contract) — name · what it means · ~size · relevance · freshness · score — and write the pool record per the record contract (`context/record.md`). End the turn on the pick: which signals make up the pool, and — if the operator wants — a **per-signal weight** (default every signal `1`, so the default score is a plain count of signals expressed). Nothing is scored until the user approves the pool.
 
 ### O3 — Score and rank (the worker), then choose rank-or-cut (overlay)
 
@@ -199,21 +201,24 @@ On the user's go, dispatch `strategy-overlay` with the resolved `entity_ids_uri`
 - **Ranked roster (the default)** — the whole list, highest to lowest. For lead-scoring / "who's hot" / prioritize-the-pipeline; activate can take the top-N by rank.
 - **Intersection (the cut)** — keep only the people expressing **≥ N** of the pool's signals (default N = 1, "anyone who matches at all"; the operator can raise it to "the majority"). This is the leaf's own filter on the ranked roster — *"my list who also do X"*. Say how many remain.
 
-Render the ranked set as the inline visual (per the render contract) — the top rows by `overlay_score` + `signals_matched`, `scored_zero` called out — the roster record beneath as the durable carrier. Be honest: the `scored_zero` people express none of the pool — a real result, not a drop; with uniform weights `overlay_score` is just a count, not a precision verdict.
+Render the ranked set as the inline visual (per the render contract) — the top rows by `overlay_score` + `signals_matched`, `scored_zero` called out — and write the roster record per the record contract (`context/record.md`). Be honest: the `scored_zero` people express none of the pool — a real result, not a drop; with uniform weights `overlay_score` is just a count, not a precision verdict.
 
 ### O4 — Emit the roster and hand off (overlay)
 
-Emit the scored set in the **shared roster record** frame — columns `entity_id, overlay_score, signals_matched, rank`. When the intersection cut was applied, the emitted roster is the kept rows and **the record says so**: its set line reads `intersection (signals_matched ≥ N) — 4,100 of 18,400 kept`, and a `full set:` line retains the worker's full ranked `roster_uri` — so a downstream consumer is never handed the slice as if it were the whole list, and the full ranking stays reachable:
+Emit the scored set in the **shared roster record** frame — columns `entity_id, overlay_score, signals_matched, rank`. When the intersection cut was applied, the emitted roster is the kept rows and **the record says so**: a `# set:` header line reads `intersection (signals_matched ≥ N) — 4,100 of 18,400 kept`, and a `# full_set_uri:` line retains the worker's full ranked `roster_uri` — so a downstream consumer is never handed the slice as if it were the whole list, and the full ranking stays reachable:
 
 ```
-Roster — your customer list, scored · overlay · pool: 6 signals (uniform weights)
-ranked set — 18,400 people:
-  overlay_score    — Σ (weight × match) over the pool; default weight 1
-  signals_matched  — how many of the 6 pool signals the person expresses
-  rank             — 1 = expresses the most
-matched: 18,400 of 20,000 identifiers submitted   ·   scored_zero: 1,210
-(for a roster re-entry the matched line reads `population: N people from your prior pass` — no identifiers were submitted)
-roster: workflow://…/roster.csv   columns: entity_id, overlay_score, signals_matched, rank
+# Watt record · kind: roster · play: overlay · audience: your customer list, scored · pool: 6 signals (uniform weights)
+# overlay_score — Σ (weight × match) over the pool; default weight 1
+# signals_matched — how many of the 6 pool signals the person expresses
+# rank — 1 = expresses the most
+# matched: 18,400 of 20,000 identifiers submitted    scored_zero: 1,210
+# (for a roster re-entry this reads `population: N people from your prior pass` — no identifiers were submitted)
+# roster_uri: workflow://…/roster.csv    entity_type: person
+entity_id,overlay_score,signals_matched,rank
+e_2231,5,5,1
+e_8890,4,4,2
+…    (sample; full set behind roster_uri)
 ```
 
 Then offer the downstream in one line — **export the top of the list** (`audience-activate` — top-N by rank) or **read who the high scorers are** (`audience-analyze`) — and record the run exactly as step 6 does (`last_workflow` = `audience-generate-list`).
@@ -226,7 +231,7 @@ Then offer the downstream in one line — **export the top of the list** (`audie
 - **Lookalike learns from the list — it doesn't match it, and it stops at the signal pool.** Resolve the seed, profile it (mode B) for its defining signals, hand the tunable pool back; never compose or measure an audience here — composing is the operator's next move down the `audience-generate-search` path. Profile the **full** seed, never a sample: intent traits are sparse, and sampling thins them into noise.
 - **Overlay scores; it never composes.** The overlay brief defines the *signals to score the resolved list against*, never who's on the list. `signal-finder` / `signal-profiler` build the pool; `strategy-overlay` scores the resolved list against it and ranks the whole set — nobody cut. The **intersection cut** (keep `signals_matched ≥ N`) is this leaf's filter on the returned roster, applied only if the user asks. Suppression is **not** an overlay thing — target-vs-exclude is `audience-activate`'s call.
 - **Honest about the match.** Counts on screen — submitted vs. matched — and the matched set is who carries forward, said plainly. For resolve-only never imply a per-row matched/unmatched rate; for expand say the count is a 1:many union (it can exceed the identifiers in) and name the floor. Never present a near-empty match as the list (or, for lookalike, profile a near-empty seed as if it were the list).
-- **A roster or a signal pool — never contact data.** The matching plays end at a roster of ID-only entities + the roster record; lookalike ends at the tunable signal pool (aggregates — signals with hashes, never people). Either way, no records or files — turning IDs back into people is `audience-activate`'s lane, behind its own scale-and-identifiers confirmation.
+- **A roster or a signal pool — never contact data.** The matching plays end at a roster of ID-only entities + the roster record file; lookalike ends at the tunable signal pool (aggregates — signals with hashes, never people). Either way, no contact data — no row-level records, no enriched file of people; turning IDs back into people is `audience-activate`'s lane, behind its own scale-and-identifiers confirmation. (The record file the leaf writes carries entity IDs and signals only, never PII.)
 - **End every turn at its question** — the list and its shape, the play, the go-ahead to resolve, the coverage read, lookalike's go-ahead to profile and its tuned pool, the downstream pick. A roster or pool the user didn't steer is the failure, not the deliverable.
 - **US-only, adults-only, person audiences only.** (A crossed *business* roster re-entering for overlay is the people-anchored B2B exception — its entity type rides through the scoring dispatches.)
 

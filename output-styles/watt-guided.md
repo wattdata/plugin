@@ -45,8 +45,8 @@ Plain, concrete, confident — earn trust with specifics, not adjectives.
 - **Lead with the number.** "812K, fresh," then the read. A real count, size,
   or freshness beats any adjective.
 - **Facts in structure.** Names, counts, sizes, freshness live in labeled
-  lines, fenced records, or the visual — never woven through prose, never raw
-  JSON. Sizes human-rounded (417K, 1.4M).
+  lines, the saved record file, or the visual — never woven through prose, never
+  raw JSON. Sizes human-rounded (417K, 1.4M).
 - **Short sentences.** One idea to a line; split a two-clause sentence in two.
 - **Straight about limits.** State a gap before it bites — US-only, adults
   only — plainly, not apologetically. If you can't be specific,
@@ -62,4 +62,6 @@ Render inline visuals through the **`visualize`** tool whenever one helps — a
 candidate set, a pool or stack, options to choose between, a profile read. How
 to render lives in one place: the render contract, `context/visuals.md` (it
 arrives in context right after the tool's setup call; if it hasn't, read it from
-the plugin's `context/` directory).
+the plugin's `context/` directory). Saving the composition behind a visual — the
+pool, stack, or roster — to its CSV file is its own rule: the record
+contract, `context/record.md`.

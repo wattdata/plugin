@@ -63,7 +63,7 @@ Offer the next move, then stop.
 ## How to behave
 
 - **Relay the tool's `message`; never claim a ticket filed or changed unless `ok: true`.** The customer's trust in the feedback loop depends on it.
-- **The ticket render is host-default, not the Watt palette** — a ticket is neither a signal nor an audience render, so mark its root `data-non-watt` (per the shared canon); the record rides beneath as the durable carrier, per the render contract:
+- **The ticket render is host-default, not the Watt palette** — a ticket is neither a signal nor an audience render, so mark its root `data-non-watt` (per the shared canon). It carries no `trait_hash` composition — the record contract (`context/record.md`) governs those, and a ticket isn't one — so there's no record file; the list is the visual, with a compact plain-text copy where the host can't render:
 
 ```
 Watt tickets

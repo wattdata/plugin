@@ -103,18 +103,18 @@ The finder returns its candidates **ordered by similarity** — most relevant to
 
 ### 4 — Track what the user keeps
 
-Picks apply immediately: keeps are tracked, a "not for me" is recorded and never resurfaced, unpicked candidates stay candidates. The kept set isn't the goal — it's what carries into `/watt:audience` — but show it so they see what they're accumulating. On **every change to the kept set**, render it as the **pool view** — kept signals by angle, sizes, freshness — and emit the durable record **quietly beneath it**, never as the headline: a compact fenced block, the session's durable state:
+Picks apply immediately: keeps are tracked, a "not for me" is recorded and never resurfaced, unpicked candidates stay candidates. The kept set isn't the goal — it's what carries into `/watt:audience` — but show it so they see what they're accumulating. On **every change to the kept set**, render it as the **pool view** — kept signals by angle, sizes, freshness — and write the kept set to the **record file** per the record contract (`context/record.md`). Its shape:
 
 ```
-Kept signals — corporate event planners
-kept:
-  In-market: Event Venues     · ~824K · fresh    · venues angle  · c0903ada…
-  Corporate purchasing role   · ~3.3M · standard · budget angle  · must-have · 0334a653…
-excluding: Wedding planners · 9b81de42…
-set aside: 3 (catering-adjacent)   angles: venues ✓ · budget ✓ · logistics open
+# Watt record · kind: pool · audience: corporate event planners
+# angles: venues=covered · budget=covered · logistics=open    set aside: 3 (catering-adjacent)
+role,name,size,freshness,angle,trait_hash
+core,In-market: Event Venues,~824K,fresh,venues,c0903ada…
+must-have,Corporate purchasing role,~3.3M,standard,budget,0334a653…
+exclusion,Wedding planners,,,,9b81de42…
 ```
 
-The `trait_hash`es ride along — advisors dispatch by hash, and `/watt:audience` seeds from this record (a must-have keeps its marker; a confirmed exclusion gets its own `excluding:` line). The `angles:` line is required — open / covered (✓) / set aside per angle — it is the convergence map (step 7) and the **recommender's coverage picture** (step 6), so it must survive compaction: lose no hash, role, or angle. The pool view shows the same kept signals — the Language ban covers it (no operator badges), and **verified figures only**: an `unverified` figure stays in the record with its caveat, never in the visual.
+The `trait_hash`es ride along — advisors dispatch by hash, and `/watt:audience` seeds from this record file (a must-have keeps its `role`; a confirmed exclusion is a `role,exclusion` row). The `angles:` header is required — open / covered / set-aside per angle — it is the convergence map (step 7) and the **recommender's coverage picture** (step 6), so it must survive compaction: lose no hash, role, or angle. The pool view shows the same kept signals — the Language ban covers it (no operator badges), and **verified figures only**: an `unverified` figure stays in the record file with its caveat, never in the visual.
 
 ### 5 — Read what you've found — `signal-profiler`, only when the user says go
 
@@ -130,7 +130,7 @@ Dispatch `signal-recommender` after a read, or when the user asks what else is o
 
 The walk converges when the user has their answer, not when a signal pool is "done". Track each angle as **open**, **covered**, or **consciously set aside**: an angle is *covered* only when the user signals they're done with it — a pick plus a move-on, or an explicit "that's enough there" — never the moment its first pick lands; when in doubt it's open, and you offer to keep exploring it. When nothing is open, the next question offers the read (step 5); after the read, the close — with "keep exploring" an option at both. Convergence is offered, never imposed.
 
-On close, if anything was kept, render the kept set as the **pool view**, the durable record riding **quietly beneath** it, never the record alone as the headline. Then summarize what they learned: the shape of this corner of the graph, what the signals look like, what's adjacent and still unexplored — and, if they kept signals, that those carry into `/watt:audience` whenever they want the actual people. **When they take it forward, route — never hand them homework:** the kept signals travel into `/watt:audience` in session context; never ask the user to copy, paste, or carry the record themselves. If they ask for the people — the list, the export, the combined headcount — be honest: turning signals into a set of people is `/watt:audience`'s job, outside explore.
+On close, if anything was kept, render the kept set as the **pool view**; the full record stays in the record file. Then summarize what they learned: the shape of this corner of the graph, what the signals look like, what's adjacent and still unexplored — and, if they kept signals, that those carry into `/watt:audience` whenever they want the actual people. **When they take it forward, route — never hand them homework:** the kept signals travel into `/watt:audience` in session context; never ask the user to copy, paste, or carry the record themselves. If they ask for the people — the list, the export, the combined headcount — be honest: turning signals into a set of people is `/watt:audience`'s job, outside explore.
 
 Then record the run so the SessionStart hook reflects it (silent plumbing — don't mention it):
 
@@ -154,10 +154,10 @@ EOF
 - **Narrate every tool call in plain English** — probes and dispatches alike; never dump a structured payload. (The plugin emits automatic *advisor started/done* markers around dispatches — your narration is the substance on top, not a replacement.)
 - **Report what came back before acting on it.** One plain line per probe or advisor return — "found ~20 strong event-planning signals, nothing tight for 'venue sourcing'". The user sees *what was found*, not just that something ran.
 - **Show the math.** A profiler read appears with the per-signal metrics that produced it, and candidate lists appear in relevance order with similarity legible — "why is X read as tighter than Y" must be answerable from what's on screen.
-- **Render every probe; the visual is what the user reads.** A probe with signals renders its candidate card; a kept-set change re-renders the pool view — record quietly beneath, never a raw block as the headline. The question still lands the one decision.
+- **Render every probe; the visual is what the user reads.** A probe with signals renders its candidate card; a kept-set change re-renders the pool view and re-writes the record file. The question still lands the one decision.
 - **Never invent signals.** No strong match → surface the closest and flag it. Don't fabricate or silently substitute.
 - **Proposed exclusions are proposals.** Not active until the user confirms — a mis-applied exclusion silently hides relevant territory.
-- **Read-only, discovery-only.** Never materialize a set of people, count a combination, enrich, resolve, or export.
+- **Read-only, discovery-only.** Never materialize a set of people, count a combination, enrich, resolve, or export. The session-state record file it writes holds signals and hashes only, never people — durable state, not a deliverable.
 - **Per-signal sizes are plain facts; combined counts are not.** A signal's size comes straight from the graph — "how many match all of this together" requires building a set, downstream's job, never yours.
 - **New dimensions stay exploration.** Geography, a life stage, a new angle mid-walk — more discovery, never a cue to assemble, size, or sample.
 - **Describe; don't decide.** You say what's in the graph and what's worth a look. What to do with it is the user's call.

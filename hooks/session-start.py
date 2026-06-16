@@ -50,10 +50,14 @@ except Exception:
 
 # Read the always-injected context: overview (orientation + voice), the
 # capability index (what each surface does, for "what can I do with Watt?"),
-# and the docs pointer (the docs root help and the surfaces point to for depth).
+# the docs pointer (the docs root help and the surfaces point to for depth), and
+# the record contract (the durable-record rule every audience skill cites —
+# injected here so it's always in scope and re-injected on compact, since the
+# record it governs is the carrier that must survive compaction).
 watt_overview = ""
 watt_index = ""
 watt_docs = ""
+watt_record = ""
 plugin_root = os.environ.get("CLAUDE_PLUGIN_ROOT", "")
 try:
     with open(os.path.join(plugin_root, "context", "overview.md"), "r", encoding="utf-8") as f:
@@ -72,6 +76,12 @@ try:
         watt_docs = f.read()
 except Exception:
     # Docs pointer is best-effort too.
+    pass
+try:
+    with open(os.path.join(plugin_root, "context", "record.md"), "r", encoding="utf-8") as f:
+        watt_record = f.read()
+except Exception:
+    # Record contract is best-effort too.
     pass
 
 if first_run:
@@ -108,6 +118,10 @@ context = f"""<watt-plugin>
 ---
 
 {watt_docs}
+
+---
+
+{watt_record}
 </watt-plugin>"""
 
 sys.stdout.write(

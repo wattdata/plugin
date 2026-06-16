@@ -109,34 +109,36 @@ The qualified set is the deliverable here; **prioritizing it into a ranked short
 
 ### 4 — Land the result
 
-**A signal stack (band / max-reach / precision).** Hand back to the parent's shared landing (`audience-generate` → *The shared spine*, step E): emit the audience record, render the landed audience, offer the downstream (`audience-analyze` / `audience-activate`), and write the state file with `last_workflow` set to `audience-generate-search`. The record header carries the landing mode: `reach 2.4M (band 1M–5M)` in band mode, `reach 84M (max-reach)` in max-reach mode, `reach 180K · precision (lift over base)` in precision mode; a `needs_anchor` union the user accepted as wide-open is recorded as `max-reach, ungated` so the downstream read knows it carries no anchor.
+**A signal stack (band / max-reach / precision).** Hand back to the parent's shared landing (`audience-generate` → *The shared spine*, step E): write the audience record file, render the landed audience, offer the downstream (`audience-analyze` / `audience-activate`), and write the state file with `last_workflow` set to `audience-generate-search`. The record header carries the landing mode: `reach 2.4M (band 1M–5M)` in band mode, `reach 84M (max-reach)` in max-reach mode, `reach 180K · precision (lift over base)` in precision mode; a `needs_anchor` union the user accepted as wide-open is recorded as `max-reach, ungated` so the downstream read knows it carries no anchor.
 
-**A roster (grouping or crossing).** The output is a roster, not a signal stack, so the durable carrier is the **roster record** — the shared serialization every roster-emitting strategy (group and traverse today; overlay / expand as they ship) writes, so `audience-analyze` and `audience-activate` consume any of them the same way. Its **classification columns vary by strategy** — group's are `group_label, cell_lift, cell_size, rank` (ranked groups); traverse's are `source_provenance` only (an unordered qualified set — no rank or score, since traverse is membership-only) — but the frame (a header naming the build, the rows, honest coverage, an ID-only `roster_uri`) is shared. Render the rows as the inline visual (per the render contract) and emit the record beneath it as the durable carrier.
+**A roster (grouping or crossing).** The output is a roster, not a signal stack, so what's saved is the **roster record** — the shared serialization every roster-emitting strategy (group and traverse today; overlay / expand as they ship) writes, so `audience-analyze` and `audience-activate` consume any of them the same way. Its **classification columns vary by strategy** — group's are `group_label, cell_lift, cell_size, rank` (ranked groups); traverse's are `source_provenance` only (an unordered qualified set — no rank or score, since traverse is membership-only) — but the frame (a header naming the build, the rows, honest coverage, an ID-only `roster_uri`) is shared. Render the rows as the inline visual (per the render contract) and write the roster record per the record contract (`context/record.md`).
 
 Grouping:
 
 ```
-Roster — weekend hikers · grouped by region × age · base 1.4M
-top groups (by concentration):
-  1. CO · 25–34   · lift 3.1× · 44K · workflow://…/cell_01.csv
-  2. WA · 25–34   · lift 2.6× · 38K · workflow://…/cell_02.csv
-pruned: 107 groups below 1,000 (220K people)   coverage: 402K of 1.4M assigned to top 10
-roster: workflow://…/roster.csv   columns: entity_id, group_label, cell_lift, cell_size, rank
-dimensions: geo.state × demographic.age_band
+# Watt record · kind: roster · play: group · audience: weekend hikers · grouped by region × age · base 1.4M
+# dimensions: geo.state × demographic.age_band
+# pruned: 107 groups below 1,000 (220K people)    coverage: 402K of 1.4M assigned to top 10
+# roster_uri: workflow://…/roster.csv    columns: entity_id, group_label, cell_lift, cell_size, rank    entity_type: person
+rank,group_label,cell_lift,cell_size,entity_ids_uri
+1,CO · 25–34,3.1×,44K,workflow://…/cell_01.csv
+2,WA · 25–34,2.6×,38K,workflow://…/cell_02.csv
 ```
 
 Crossing:
 
 ```
-Roster — in-market solar buyers → employers · filter: mid-size tech firms
-qualified set (unordered) — 9,100 companies:
-  b_8f… ← 3 in-market employees   ·  b_2a… ← 2   ·  b_c1… ← 1   · …
-crossing: employs (person→business)   seeds 180K · joined 50.4K · qualified 9.1K
-roster: workflow://…/roster.csv   columns: entity_id, source_provenance
-next: rank into a shortlist or segment the set — a separate step, on request
+# Watt record · kind: roster · play: traverse · audience: in-market solar buyers → employers · filter: mid-size tech firms
+# crossing: employs (person→business)    seeds 180K · joined 50.4K · qualified 9.1K
+# roster_uri: workflow://…/roster.csv    entity_type: business
+# next: rank into a shortlist or segment the set — a separate step, on request
+entity_id,source_provenance
+b_8f…,3 in-market employees
+b_2a…,2 in-market employees
+…    (sample; full set behind roster_uri)
 ```
 
-The roster record is the roster's canonical serialization: its classification columns are first-class and must survive downstream, the `roster_uri` carries the entity-ID set (IDs only — never contact data), and the coverage line stays honest about the measured join and what was filtered out. **A grouped record's per-group lines each carry that group's `entity_ids_uri`** (the cell artifact from the worker's return, the `cell_01.csv` lines above) — that URI is what a per-group read (`audience-analyze-list`) or a per-group export (`audience-activate`) consumes; the flat `roster_uri` carries the classification *columns*, never the per-group URIs, so dropping the cell lines from the record severs the per-group paths. Then offer the downstream in one line: read who these entities are over the roster (`audience-analyze`); export the set (`audience-activate`); or shape it further — segment it with the grouping objective, or rank it into a shortlist (the roster re-enters `audience-generate-list`'s overlay play). Either of the first two runs on their say-so. Write the state file with `last_workflow` set to `audience-generate-search` (the same plumbing as the stack landing).
+The roster record is the roster's canonical serialization: its classification columns are first-class and must survive downstream, the `roster_uri` carries the full entity-ID set (IDs only — never contact data) as a CSV of those columns, and the `# crossing:` / coverage line stays honest about the measured join and what was filtered out. **A grouped record's rows each carry that group's `entity_ids_uri`** (the `entity_ids_uri` column — the cell artifact from the worker's return, the `cell_01.csv` values above) — that URI is what a per-group read (`audience-analyze-list`) or a per-group export (`audience-activate`) consumes; the flat `roster_uri` carries the per-entity classification *columns*, never the per-group URIs, so dropping the `entity_ids_uri` column from the record severs the per-group paths. Then offer the downstream in one line: read who these entities are over the roster (`audience-analyze`); export the set (`audience-activate`); or shape it further — segment it with the grouping objective, or rank it into a shortlist (the roster re-enters `audience-generate-list`'s overlay play). Either of the first two runs on their say-so. Write the state file with `last_workflow` set to `audience-generate-search` (the same plumbing as the stack landing).
 
 ## How to behave
 

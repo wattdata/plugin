@@ -55,7 +55,7 @@ No AND/OR/AND_NOT, no boolean "pools" (the OR/AND/AND_NOT groupings), no "boolea
 - **A build-shaped brief arrives** ("build me an audience of weekend hikers in Colorado, a couple million people"). A description anchor routes to `audience-generate-search`, carrying everything already said; the leaf elicits only what's missing. With one leaf today, route there silently.
 - **An owned list arrives as the seed** ("here are my customers", "match my customer list", "expand my list to every match", "find more people like my customers", "rank my list by intent"). That's the `audience-generate-list` anchor — route there (resolve-only for a tight match, expand for the widest match set, lookalike to profile the list for the signals that define it, or overlay to score the resolved list against signals and rank it; group and traverse aren't available there). A list with a *read* intent ("who are these people") is `audience-analyze-list` instead.
 - **Routed here from `/watt:audience` with no brief yet.** Ask for the brief: *"Describe the audience in plain English — who they are, what they're doing or into, and roughly how many people you need."*
-- **From `/watt:explore`.** A session's signal pool seeds the working set: the picked signals arrive with hashes, roles, and evidence — the pool record carries all three, so a pasted or compacted record seeds as well as a live session. Skip discovery for the angles it covers; route to the leaf, which elicits its target and goes to compose. A signal the record flags `unverified` keeps its caveat through scoring — its figures are carried claims, never presented as refreshed.
+- **From `/watt:explore`.** A session's signal pool seeds the working set: the picked signals arrive with hashes, roles, and evidence — the pool record file carries all three, so the saved record (or one pasted in) seeds as well as a live session. Skip discovery for the angles it covers; route to the leaf, which elicits its target and goes to compose. A signal the record flags `unverified` keeps its caveat through scoring — its figures are carried claims, never presented as refreshed.
 - **A profile-shaped ask** ("who's in my market", "how many roofers near Nashville", "an audience profile for my client"). That's a read, not a build — there's no target to compose toward. Route to `audience-analyze` (its `-search` flavor profiles a market from a brief, and writes the shareable report). Don't build it here.
 - **A list of people / a CSV to build from.** That's the owned-list anchor — route to `audience-generate-list`, which resolves it to a matched roster. (To *read* a supplied list as aggregates, `audience-analyze-list`.) A build from *signals* still starts from a description — `audience-generate-search`.
 - **A roster from a prior pass, with a transform intent** ("score the people from my last run", "find more like the households we expanded" — an entity-IDs URI or a pasted roster record). The same owned-list anchor, already resolved — route to `audience-generate-list`, which skips the resolve and runs the play on the set directly (overlay / lookalike today). A roster with a *read* intent is `audience-analyze-list`; an *export* intent, `audience-activate`.
@@ -85,22 +85,20 @@ Dispatch **`signal-profiler`** to score the gathered candidates — by `trait_ha
 
 Render the scored slice as an **inline visual** (per the render contract), grouped by role: **name · what it means · ~size · relevance · freshness · rarity/specificity · score · role** — strongest ~5–8, an honest count of the rest, sizes human-rounded (417K, 2.1M), a score bar per row, any signal that arrived without a hash or couldn't be enriched visibly flagged. Scores are **role-appropriate**, so "why is X above Y" is answerable *within* a role group (a core signal's score and a gate's aren't on the same basis — never cross-rank them); the profiler's axes visibly drive each score. Then end the turn at the decision: which signals join the working set, which are out — same pick mechanics as explore (multi-select for keeps, "Other" carries number-picks and steers).
 
-### C — Keep the working-set record, pivot freely
+### C — Curate the working set, pivot freely
 
-Picks apply immediately. On **every working-set change**, re-emit the record — a compact fenced block, the session's durable state:
+Picks apply immediately. On **every working-set change**, do two things: re-render the working set as the **visual** (per the render contract) — signals grouped by role in plain English, each with size, freshness, and score, score bars carrying the ranking, the strongest few shown with an honest count of the rest, data-only and the same structure every render — and re-write the **record file** per the record contract (`context/record.md`). What the record file holds:
 
 ```
-Working set — weekend hikers · target: band 1M–5M
-core:
-  In-market: Hiking Gear      · ~2.1M · fresh    · score 0.84 · 3fa4b2…
-  Outdoor recreation interest · ~9.8M · standard · score 0.31 · c0903a…
-must-have:
-  Colorado resident (geo)     · ~4.4M · —        · gate       · 0334a6…
-excluded-signals: 2 (retail employees, gear resellers)
-angles: hiking ✓ · fitness open    dropped candidates: 5
+# Watt record · kind: pool · audience: weekend hikers · target: band 1M–5M
+# angles: hiking=covered · fitness=open    excluded-signals: 2 (retail employees, gear resellers)    dropped candidates: 5
+role,name,size,freshness,score,trait_hash
+core,In-market: Hiking Gear,~2.1M,fresh,0.84,3fa4b2…
+core,Outdoor recreation interest,~9.8M,standard,0.31,c0903a…
+must-have,Colorado resident (geo),~4.4M,,,0334a6…
 ```
 
-The header line carries the leaf's target (`target: band 1M–5M` for `-search`). Hashes ride along (advisors are dispatched by hash); the `angles:` line tracks open/covered so convergence survives compaction. The record is the durable carrier — emit it on every change and let it ride quietly beneath the surface the user reads, which is the working set rendered (per the render contract) — signals grouped by role in plain English, each with size, freshness, and score, score bars carrying the ranking — data-only, same structure every render.
+The header carries the leaf's target (`target: band 1M–5M` for `-search`). Hashes ride along (advisors are dispatched by hash); the `angles:` header tracks open/covered so convergence survives compaction — the file carries it.
 
 **Lift** — how much likelier a population is to carry a trait than average — appears at later beats, **never as a working-set curation column**; during curation, working-set figures stay graph facts: size, freshness, score. It surfaces twice afterward: the **precision** landing mode's `lift` strategy measures each candidate's lift *over the must-have base* at compose (in `-search`), and the `audience-analyze` read measures lift *over the built audience* after. If the user asks for lift mid-curation, say which of those they mean and offer it at its beat.
 
@@ -114,22 +112,21 @@ This is the leaf's lane: it settled the objective (e.g. `-search`'s size band, o
 
 This step lands a **signal stack**. A leaf running a Classify strategy (e.g. `-search`'s grouping objective) lands a **roster record** instead — its own serialization, owned by the leaf; see the leaf for that shape. The stack landing:
 
-On an accepted stack, emit the final record — now the **audience record**, the artifact the rest of the flow consumes:
+On an accepted stack, write the final **audience record** to the record file per the record contract (`context/record.md`) — the artifact the rest of the flow consumes:
 
 ```
-Audience — weekend hikers · reach 2.4M (band 1M–5M)
-defining (any of):
-  In-market: Hiking Gear      · 3fa4b2…
-  Outdoor recreation interest · c0903a…
-must-have (all of):
-  Colorado resident (geo)     · 0334a6…
-excluding:
-  Gear resellers              · 9b81de…
-location: none (national)   entity_type: person
-workflow: 550e8400-…   sample: 10 entity IDs held in session
+# Watt record · kind: stack · audience: weekend hikers
+# reach: 2.4M (band 1M–5M)
+# location: none (national)    entity_type: person
+# workflow: 550e8400-…    sample: 10 entity IDs held in session
+role,name,trait_hash
+defining,In-market: Hiking Gear,3fa4b2…
+defining,Outdoor recreation interest,c0903a…
+must-have,Colorado resident (geo),0334a6…
+exclusion,Gear resellers,9b81de…
 ```
 
-This record is the stack's canonical serialization: names ride with the hashes so a pasted record stays readable to every downstream step, and the role groups (*any of* / *all of* / *excluding*) carry the expression exactly as composed, in plain English. The `location:` line carries any radius/boundary filter the compose applied — distinct from a geo-boundary *signal*, which lives in the role groups; the strategies and the downstream steps take location as its own input. Its re-supply consumers (`audience-analyze-signal`, `audience-activate`) parse it, and a record without it silently widens a re-run — so the line is always present, written `none (national)` when no filter rode along, never dropped. A downstream refresh re-emits this record with today's measured reach and a `· refreshed` header suffix — one suffix, defined here, echoed by both refresh exits. The header carries the landing mode's target: `reach 2.4M (band 1M–5M)` for greedy, `reach 84M (max-reach)` for broad, `reach 180K · precision (lift over base)` for lift. Alongside it, render the landed audience (per the render contract) — role groups, per-signal sizes and freshness, measured reach against the target — with the record riding quietly beneath it as the durable carrier. Offer the downstream in one line, in plain words: read who these people actually are (`audience-analyze`), export it (`audience-activate` — Meta and Google Customer Match), or keep exploring around it (`/watt:explore` — the stack's signals carry back as covered territory, and the walk resumes on what's adjacent). Any of them runs on their say-so. Then record the run (silent plumbing — don't mention it), with `last_workflow` set to the leaf that ran:
+This record is the stack's canonical serialization: names ride beside the hashes so a re-supplied record stays readable to every downstream step, and the `role` column (`defining` / `must-have` / `exclusion`) carries the expression exactly as composed — any-of / all-of / none-of. The `location` header carries any radius/boundary filter the compose applied — distinct from a geo-boundary *signal*, which lives in the rows; the strategies and the downstream steps take location as its own input. Its re-supply consumers (`audience-analyze-signal`, `audience-activate`) parse it, and a record without it silently widens a re-run — so the line is always present, written `none (national)` when no filter rode along, never dropped. The `reach` header carries the landing mode's target: `2.4M (band 1M–5M)` for greedy, `84M (max-reach)` for broad, `180K · precision (lift over base)` for lift; a downstream refresh re-writes the record (per the record contract) carrying the `· refreshed` suffix on that line. Render the landed audience as the surface the user reads (per the render contract) — role groups, per-signal sizes and freshness, measured reach against the target. Offer the downstream in one line, in plain words: read who these people actually are (`audience-analyze`), export it (`audience-activate` — Meta and Google Customer Match), or keep exploring around it (`/watt:explore` — the stack's signals carry back as covered territory, and the walk resumes on what's adjacent). Any of them runs on their say-so. Then record the run (silent plumbing — don't mention it), with `last_workflow` set to the leaf that ran:
 
 ```bash
 STATE_DIR="${CLAUDE_PLUGIN_DATA:-${HOME}/.claude/plugins/data/watt}"
@@ -152,7 +149,7 @@ EOF
 - **Show the math.** The profiler's feature-vector axes are on screen; the user answers "why is X above Y" from the render. Never hand-score a signal.
 - **Reach is measured; sizes are facts.** A signal's size comes from the graph; what a combination reaches comes only from the strategy worker's probes. Never add sizes together for the user.
 - **Never invent signals.** Unmatched concepts surface honestly with the closest match flagged — in discovery and in geo lookup alike.
-- **A signal stack, not contact data.** Generate ends at the stack + reach + an ID-only sample. Records, files, and row-level anything are the `audience-activate` step's job, behind its own confirmation.
+- **A signal stack, not contact data.** Generate ends at the stack + reach + an ID-only sample. Contact data — row-level records, an enriched file of people — is the `audience-activate` step's job, behind its own confirmation. (The record file generate writes is the composition itself — signals and hashes, never people.)
 - **US-only, adults-only, person audiences only.** Non-US targeting is out of scope — say so, don't return a silent empty result. Briefs about minors pivot to parents/guardians of that age range.
 
 ## Refuse cleanly

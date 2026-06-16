@@ -22,18 +22,18 @@ This is a delta over `audience-analyze`: the unique work here is just **resolvin
 
 ## Language
 
-Inherits the parent's table (signals / must-haves / exclusions; lift explained once; sample named). The role groups in an audience record — *defining (any of)* / *must-have (all of)* / *excluding* — carry the boolean shape exactly; the operator never sees AND/OR/NOT.
+Inherits the parent's table (signals / must-haves / exclusions; lift explained once; sample named). The `role` column in an audience record — `defining` (any-of) / `must-have` (all-of) / `exclusion` (none-of) — carries the boolean shape exactly; the operator never sees AND/OR/NOT.
 
 ## The flow
 
 ### 1 — Take the signals as given
 
 - **A built audience in session** (fresh from generate, or composed in `audience-analyze-search`) — use it directly. Confirm which one in a word if there's any doubt.
-- **A pasted/compacted audience record** — the role groups (*any of* / *all of* / *excluding*) carry the expression exactly as built, and names ride with hashes; take it as the stack. A past session's reach/headcount is "measured then", not re-measured silently. **On a refresh-shaped ask** ("refresh this", "is it still ~2M?"), the read's fresh materialization *is* the re-measure: after the read, **re-emit the audience record** with today's measured reach against the header's original target (`reach 2.1M (band 1M–5M) · refreshed`), location and roles unchanged — the updated record is the deliverable they save for next time.
-- **A signal pool** (an `/watt:explore` session's kept signals, or a lookalike pool) — **auto-compose it to the default stack**: signals the pool marks must-have go *all-of*, its exclusions *none-of*, everything else *any-of* (one OR union). **If the pool carries no role markers at all, ask once** — *"any must-haves or must-have-nots in here, or read them all as one group?"* — then build. This is a deterministic reading of the user's picks, the same way a record's role groups reconstruct an expression — never a strategy compose; refining the pool into a tuned stack is `audience-generate`'s lane, offered if the read shows it's wanted.
+- **A re-supplied audience record** — read from the saved record file in the working directory, pasted in, or compacted in context — the `role` column (`defining` / `must-have` / `exclusion`) carries the expression exactly as built, and names ride beside hashes; take it as the stack. A past session's reach/headcount is "measured then", not re-measured silently. **On a refresh-shaped ask** ("refresh this", "is it still ~2M?"), the read's fresh materialization *is* the re-measure: after the read, **re-write the audience record** per the record contract (`context/record.md`) with today's measured reach against the header's original target (`reach 2.1M (band 1M–5M) · refreshed`), location and roles unchanged.
+- **A signal pool** (an `/watt:explore` session's kept signals, or a lookalike pool) — **auto-compose it to the default stack**: signals the pool marks must-have go *all-of*, its exclusions *none-of*, everything else *any-of* (one OR union). **If the pool carries no role markers at all, ask once** — *"any must-haves or must-have-nots in here, or read them all as one group?"* — then build. This is a deterministic reading of the user's picks, the same way a record's `role` column reconstructs an expression — never a strategy compose; refining the pool into a tuned stack is `audience-generate`'s lane, offered if the read shows it's wanted.
 - **Signals the user names, no hashes** — the leaf cannot fabricate a hash. Dispatch `signal-finder` once to resolve each name to its verified trait (driving from meaning), surface the matches for a one-touch confirm, and only then build the stack. Never pass a name off as a hash, never guess one.
 
-Build the expression from the role groups — defining *any-of*, must-haves *all-of*, exclusions *none-of* — and reuse the record's `workflow_id` if it carries one, else generate one. If the supplied set carries no measured reach, measure the headcount once with a count-only entity find (`format: "none"`, location applied if the record fences one).
+Build the expression from the `role` column — `defining` any-of, `must-have` all-of, `exclusion` none-of — and reuse the record's `workflow_id` if it carries one, else generate one. If the supplied set carries no measured reach, measure the headcount once with a count-only entity find (`format: "none"`, location applied if the record fences one).
 
 ### 2 — Run the shared read
 
