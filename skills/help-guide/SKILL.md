@@ -9,7 +9,7 @@ compatibility: May look up the published docs over the public web (web search / 
 
 ## Purpose
 
-`help-guide` is the `--help` for Watt — it answers *what can I do* and *how do I do it* in plain language, so a user who's unsure where to start leaves knowing the surface and the next command to type. It answers from the **capability index** (`context/index.md`, injected this session) and the orientation already in context — the canonical map of what's live. It reads nothing from the Signal Graph and files nothing; it explains, points to the command that acts, and links the matching docs page (`context/docs.md`) for depth.
+`help-guide` is the `--help` for Watt — it answers *what can I do* and *how do I do it* in plain language, so a user who's unsure where to start leaves knowing the surface and the next command to type. It answers from the **capability index** — **read `context/index.md` when this skill runs** (it's the canonical map of what's live, loaded on demand, not always in context), together with the orientation already in context. It reads nothing from the Signal Graph and files nothing; it explains, points to the command that acts, and links the matching docs page (`context/docs.md`) for depth.
 
 **Answer the question, then point to the command that does it.** The guide's job is done when the user knows what's possible and which command acts on it — not when a ticket is filed. A how-to that can't be answered from the capability map offers a human, never a guess about a feature that may not exist.
 
@@ -31,7 +31,7 @@ One answer, one render, one decision — then stop.
 
 ### 1 — Answer from the capability map
 
-Answer directly and concretely from the capability index and orientation, in the customer's terms — name the real surfaces by their command (`/watt:explore` to interrogate the graph; `/watt:audience` to build a sized audience, profile a market, read who an audience reaches, or export it for Meta, Google, or Reddit) and the real limits (US-only, person/adults-only, employer/job-title not a defining target, Meta + Google + Reddit export). Name the **commands** — the user's interface — never the internal step names behind them. **Don't invent a capability the index doesn't list** — if it's not there, say so and offer the closest real thing or a human.
+**First, read `context/index.md`** — the capability index isn't always in context; it's read here, on demand. It's the canonical map; answer only from it (plus the orientation already in context). Answer directly and concretely from the capability index and orientation, in the customer's terms — name the real surfaces by their command (`/watt:explore` to interrogate the graph; `/watt:audience` to build a sized audience, profile a market, read who an audience reaches, or export it for Meta, Google, or Reddit) and the real limits (US-only, person/adults-only, employer/job-title not a defining target, Meta + Google + Reddit export). Name the **commands** — the user's interface — never the internal step names behind them. **Don't invent a capability the index doesn't list** — if it's not there, say so and offer the closest real thing or a human.
 
 ### 2 — Render the capability view
 

@@ -48,15 +48,19 @@ except Exception:
     # Missing or unparseable state -> first run.
     pass
 
-# Read the always-injected context: overview (orientation + voice), the
-# capability index (what each surface does, for "what can I do with Watt?"),
-# the docs pointer (the docs root help and the surfaces point to for depth), and
-# the record contract (the durable-record rule every audience skill cites —
+# Read the always-injected context, deliberately kept under the host's
+# 10,000-char cap on hook additionalContext (output over the cap is offloaded to
+# a file and replaced with a short preview the model won't read unprompted, so
+# anything past it never reaches the model): the overview (orientation + voice)
+# and the record contract (the durable-record rule every audience skill cites —
 # injected here so it's always in scope and re-injected on compact, since the
 # record it governs is the carrier that must survive compaction).
+#
+# The capability index and the docs pointer are NOT bundled here on purpose —
+# together they pushed this payload well past the cap, truncating whatever came
+# last. They're needed only when answering "what can Watt do" / linking docs, so
+# the help skills read context/index.md and context/docs.md on demand instead.
 watt_overview = ""
-watt_index = ""
-watt_docs = ""
 watt_record = ""
 plugin_root = os.environ.get("CLAUDE_PLUGIN_ROOT", "")
 try:
@@ -64,18 +68,6 @@ try:
         watt_overview = f.read()
 except Exception:
     # Overview is best-effort; absence just means a thinner greeting.
-    pass
-try:
-    with open(os.path.join(plugin_root, "context", "index.md"), "r", encoding="utf-8") as f:
-        watt_index = f.read()
-except Exception:
-    # Index is best-effort too.
-    pass
-try:
-    with open(os.path.join(plugin_root, "context", "docs.md"), "r", encoding="utf-8") as f:
-        watt_docs = f.read()
-except Exception:
-    # Docs pointer is best-effort too.
     pass
 try:
     with open(os.path.join(plugin_root, "context", "record.md"), "r", encoding="utf-8") as f:
@@ -110,14 +102,6 @@ context = f"""<watt-plugin>
 ---
 
 {watt_overview}
-
----
-
-{watt_index}
-
----
-
-{watt_docs}
 
 ---
 

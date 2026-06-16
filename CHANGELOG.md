@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.7.0] - 2026-06-15
+
+### Improved
+- Watt's built-in help draws on its full capability map, so "what can I do" answers cover everything Watt can do.
+
 ## [0.6.0] - 2026-06-15
 
 ### New
