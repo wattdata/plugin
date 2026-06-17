@@ -179,18 +179,6 @@
           }
         ]
       }
-    ],
-    "Notification": [
-      {
-        "matcher": "auth_success",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/auth-success.py\"",
-            "statusMessage": "Confirming your Watt sign-in…"
-          }
-        ]
-      }
     ]
   }
 }

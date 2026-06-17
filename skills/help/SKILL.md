@@ -1,7 +1,7 @@
 ---
 name: help
 description: Get help with Watt without leaving Claude — ask what you can do and how, find out whether the data you're after actually exists (Watt goes and checks for you), or reach the team to report a bug, request a signal or feature, or talk to a human, and check on anything you've filed. It answers your question first; filing a request is the last resort, not the first move. Use when you type /watt:help, or say "what can Watt do", "how do I build an audience", "do you have data on X", "is there a signal for Y", "something's broken", "I need a signal for Z", "I need to talk to someone", or "what have I filed".
-compatibility: The concierge and ticket leaves talk to the remote Watt MCP server — network access and browser OAuth on the first tool call. The concierge's candidate card uses the Watt palette (a signal render), while ticket and guide renders use the host's default styling. Inline visuals and the closing decision follow the render contract (`context/visuals.md`), degrading gracefully where the host can't render or return a pick.
+compatibility: Requires the remote Watt MCP server (network access).
 ---
 
 # Help
@@ -30,9 +30,9 @@ The leaves inherit these; they don't restate them.
 
 - **Help is a support utility, not the audience engine.** The "interaction is the engine" rule that governs explore/generate/analyze/activate — never act without a per-beat go-ahead — does **not** bind help the same way: the user's question *is* the go-ahead, and the concierge may go probe the graph while they wait ("hang tight — checking for you"). What still holds: every leaf **ends its turn on one decision the user makes**, and help never races toward a *built* anything — it answers, then routes.
 - **Read-only and outward-safe.** No leaf sizes, builds, resolves, enriches, or exports — a request to turn signals into actual people is `/watt:audience`, named honestly. The only outward-facing act is filing a ticket, and that fires only on an explicit confirm (help-ticket owns the rule).
-- **Point to the docs for depth.** The published docs (read `context/docs.md` when a docs link is in play — it's on demand, not always in context) are Watt's long-form companion. When an answer would land better with more detail, offer one page as a plain markdown link — *after* you've answered or checked, never instead of it. Don't hardcode page URLs (the docs change): find the current page by searching the web or crawling from the docs root and link what you actually reach, else fall back to the docs root. Never guess a URL.
+- **Point to the docs for depth.** The published docs (load `${CLAUDE_PLUGIN_ROOT}/context/docs.md` through the shell when a docs link is in play — the file tool can't always see the plugin directory, and it's on demand, not always in context) are Watt's long-form companion. When an answer would land better with more detail, offer one page as a plain markdown link — *after* you've answered or checked, never instead of it. Don't hardcode page URLs (the docs change): find the current page by searching the web or crawling from the docs root and link what you actually reach, else fall back to the docs root. Never guess a URL.
 - **Visuals follow what they show.** Render each beat per the render contract. A render of **signals** (the concierge's candidate card) is a signal render in the **Watt palette**, like explore's; a **ticket or guide** render is neither a signal nor an audience render, so it uses the **host's default styling — never the Watt palette** (mark its root `data-non-watt`). The contract owns the rest — and how the closing decision degrades where the host can't render or return a pick.
-- **Narrate, don't dump.** Before the first Watt call, mention a browser sign-in will pop (only if not already signed in this session). Narrate every tool call and dispatch in plain English; never show a structured payload.
+- **Narrate, don't dump.** Narrate every tool call and dispatch in plain English; never show a structured payload.
 - **Don't write the plugin state file.** Help is a utility, not a workflow milestone — leave `state.json` untouched.
 
 ## Entry

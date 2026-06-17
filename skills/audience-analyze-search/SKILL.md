@@ -2,7 +2,7 @@
 name: audience-analyze-search
 description: Read who a market is, starting from a plain-English brief — discover → pivot → read. The discovery-first way into audience-analyze, behind /watt:audience; size is an output, never a target. Aggregates only — never individual records, never an export. Not a user command. Use when a read-shaped ask arrives with a brief and no signals yet — "who's in the market for X", "profile this audience", "an audience profile for my client".
 user-invocable: false
-compatibility: Talks to the remote Watt MCP server — network access and browser OAuth on the first tool call. Inline visuals and the closing decision follow the render contract (`context/visuals.md`), degrading gracefully where the host can't render or return a pick.
+compatibility: Requires the remote Watt MCP server (network access).
 ---
 
 # Analyze a market from a brief
@@ -28,7 +28,7 @@ Inherits the parent's table (signals / must-haves / exclusions; lift explained o
 
 ## The flow
 
-One decision per turn, landed per the render contract (`context/visuals.md`). Mention before the first Watt call that a browser sign-in will pop. Track each advisor dispatch as a session task.
+One decision per turn, landed per the render contract (`context/visuals.md`). Track each advisor dispatch as a session task.
 
 ### 1 — Settle the brief and the place
 

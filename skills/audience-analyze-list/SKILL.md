@@ -2,7 +2,7 @@
 name: audience-analyze-list
 description: Read who a supplied list of people is — take a list of people as identifiers (emails, phones, names, addresses, inline or as a CSV) to resolve, or as already-resolved entity IDs (a roster from grouping, or a pasted entity-ID set), and render the discovered half of the read (the traits that define them against the world by lift, plus segmentation). No specified-signals section — the user gave people, not signals. The list way into audience-analyze, behind /watt:audience. Aggregates only — never individual records, never an export. Not a user command. Use when the user brings a list of people and asks who they are — "profile my customer list", "what do these people have in common", "read this roster's groups".
 user-invocable: false
-compatibility: Talks to the remote Watt MCP server — network access and browser OAuth on the first tool call. Inline visuals and the closing decision follow the render contract (`context/visuals.md`), degrading gracefully where the host can't render or return a pick.
+compatibility: Requires the remote Watt MCP server (network access).
 ---
 
 # Analyze a supplied list of people

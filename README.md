@@ -26,8 +26,7 @@ In Claude Code, run two commands.
 /plugin install watt@watt
 ```
 
-Restart Claude Code, then run any `/watt` command — the first one triggers a
-one-time browser sign-in.
+Restart Claude Code, then run any `/watt` command.
 
 ## What you can do
 

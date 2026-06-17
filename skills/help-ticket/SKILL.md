@@ -2,7 +2,7 @@
 name: help-ticket
 description: Reach the Watt team — draft and file a bug, a data-signal request, a feature request, or a human-help escalation, and check or list the tickets already filed. Files only on the user's explicit go-ahead on the exact text; reads (check, list) run freely. The team-channel leaf behind /watt:help, and the fallback the guide and concierge route to when a need can't be resolved. Not a user command. Use when the ask is to tell the team something — "something's broken / it's returning wrong data", "you should have a signal for X", "I wish Watt could…", "I need a human", "what have I filed", "status of WATT-212".
 user-invocable: false
-compatibility: Talks to the remote Watt MCP server — network access and browser OAuth on the first tool call. The ticket visuals use the host's default styling (not a signal or audience render). Inline visuals and the closing decision follow the render contract (`context/visuals.md`), degrading gracefully where the host can't render or return a pick.
+compatibility: Requires the remote Watt MCP server (network access).
 ---
 
 # Reach the team
