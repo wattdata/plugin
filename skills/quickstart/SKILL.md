@@ -1,7 +1,7 @@
 ---
 name: quickstart
 description: New to Watt? Start here. A short, guided first run that ends with a real audience you built — pick a starter audience or describe your own in plain English, watch Watt find the signals behind it and stack them into an audience with a measured size, then choose what's next — export it, see who's in it, or keep exploring. Pick this if you just installed Watt or want to see how it works — "how does Watt work", "where do I start" — or type /watt:quickstart.
-compatibility: Drives the remote Watt MCP server via the /watt:audience build flow, so it needs network access and browser OAuth on the first tool call. Inline visuals and the closing decision follow the render contract (`context/visuals.md`), degrading gracefully where the host can't render or return a pick.
+compatibility: Requires the remote Watt MCP server (network access).
 ---
 
 # Watt Quickstart (interactive)
@@ -41,10 +41,6 @@ Then the brief decision, rendered per the render contract (`context/visuals.md`)
 Carry each starter's landing mode silently — the band (5M–10M), precision (the homeowner gate carried as the must-have base), max-reach — so the build flow routes without re-asking.
 
 **Coach their own brief by reading it back, not by lecturing.** A good description has three parts: **who** (what these people are *doing* or *into* — a behavior, interest, intent, or life-stage; never an employer or job title), **where** *(optional — a state, metro, or ZIP)*, and **the landing** (about how many, the widest credible reach, or the highest-intent few). Read their draft back against those parts, name what's already strong, and ask **at most one question** to fill what's missing — usually the landing: *"Want a target size, the widest reach, or the highest-intent few?"*
-
-If no Watt MCP call has happened this session, before the first tool call mention:
-
-> "Heads up — first Watt call this session will pop your browser to sign in. Just sign in and come back."
 
 ### 2 — Run the build as written
 
@@ -110,6 +106,5 @@ Don't mention this to the user — it's plumbing.
 
 ## Failure modes
 
-- **OAuth fails / browser closed.** Stop. Tell them to sign in and retype `/watt:quickstart`.
 - **Discovery comes back thin for their own brief.** Say so plainly and offer the closest angle the graph does hold — or a starter brief, named as the known-good path ("want to see it work on hikers first, then come back to yours?").
 - **A starter build lands thin or off-band.** The build flow's own edge handling owns it (off-band leverage, the over-broad finding); keep the framing honest — a real number with a caveat beats a padded demo.

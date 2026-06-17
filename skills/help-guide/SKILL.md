@@ -2,14 +2,14 @@
 name: help-guide
 description: Answer what the user can do with Watt and how — the capability and how-to guide. Explains the surfaces (explore, the audience steps), what a signal is, what's possible and what isn't, and points to the command that does the job — all from the capability index, with a pointer to the published docs for depth. Touches no Signal Graph; read-only — never builds, sizes, or files. The guide leaf behind /watt:help. Not a user command. Use when the ask is about using Watt itself — "what can I do", "how do I build an audience", "what are signals", "what strategies are there", "where do I start", "is Watt a fit for me".
 user-invocable: false
-compatibility: May look up the published docs over the public web (web search / fetch) to link the right page for depth, falling back to the docs root if one can't be reached — no Signal Graph access, nothing filed. Inline visuals and the closing decision follow the render contract (`context/visuals.md`), degrading gracefully where the host can't render or return a pick.
+compatibility: May use web search / fetch to look up the published docs.
 ---
 
 # Guide — what you can do with Watt
 
 ## Purpose
 
-`help-guide` is the `--help` for Watt — it answers *what can I do* and *how do I do it* in plain language, so a user who's unsure where to start leaves knowing the surface and the next command to type. It answers from the **capability index** — **read `context/index.md` when this skill runs** (it's the canonical map of what's live, loaded on demand, not always in context), together with the orientation already in context. It reads nothing from the Signal Graph and files nothing; it explains, points to the command that acts, and links the matching docs page (`context/docs.md`) for depth.
+`help-guide` is the `--help` for Watt — it answers *what can I do* and *how do I do it* in plain language, so a user who's unsure where to start leaves knowing the surface and the next command to type. It answers from the **capability index** — **load `${CLAUDE_PLUGIN_ROOT}/context/index.md` through the shell when this skill runs** (`cat` it — the file tool can't always see the plugin directory; it's the canonical map of what's live, loaded on demand, not always in context), together with the orientation already in context. It reads nothing from the Signal Graph and files nothing; it explains, points to the command that acts, and links the matching docs page (`context/docs.md`) for depth.
 
 **Answer the question, then point to the command that does it.** The guide's job is done when the user knows what's possible and which command acts on it — not when a ticket is filed. A how-to that can't be answered from the capability map offers a human, never a guess about a feature that may not exist.
 
@@ -31,7 +31,7 @@ One answer, one render, one decision — then stop.
 
 ### 1 — Answer from the capability map
 
-**First, read `context/index.md`** — the capability index isn't always in context; it's read here, on demand. It's the canonical map; answer only from it (plus the orientation already in context). Answer directly and concretely from the capability index and orientation, in the customer's terms — name the real surfaces by their command (`/watt:explore` to interrogate the graph; `/watt:audience` to build a sized audience, profile a market, read who an audience reaches, or export it for Meta, Google, or Reddit) and the real limits (US-only, person/adults-only, employer/job-title not a defining target, Meta + Google + Reddit export). Name the **commands** — the user's interface — never the internal step names behind them. **Don't invent a capability the index doesn't list** — if it's not there, say so and offer the closest real thing or a human.
+**First, load `${CLAUDE_PLUGIN_ROOT}/context/index.md`** through the shell (`cat` it — the file tool can't always see the plugin directory) — the capability index isn't always in context; it's read here, on demand. It's the canonical map; answer only from it (plus the orientation already in context). Answer directly and concretely from the capability index and orientation, in the customer's terms — name the real surfaces by their command (`/watt:explore` to interrogate the graph; `/watt:audience` to build a sized audience, profile a market, read who an audience reaches, or export it for Meta, Google, or Reddit) and the real limits (US-only, person/adults-only, employer/job-title not a defining target, Meta + Google + Reddit export). Name the **commands** — the user's interface — never the internal step names behind them. **Don't invent a capability the index doesn't list** — if it's not there, say so and offer the closest real thing or a human.
 
 ### 2 — Render the capability view
 
@@ -39,7 +39,7 @@ Render the answer per the render contract (`context/visuals.md`), in the host's 
 
 ### 3 — End on the next move
 
-Close on one decision: the command that does what they asked (try `/watt:explore`, build with `/watt:audience`, see it work via `/watt:quickstart`), check whether the data exists (`help-discover`), or — only if the map couldn't answer — reach the team. Where the topic has a docs page, offer it as the read-more alongside the command (find it live per `context/docs.md`). Never auto-run a command; name it and let them choose.
+Close on one decision: the command that does what they asked (try `/watt:explore`, build with `/watt:audience`, see it work via `/watt:quickstart`), check whether the data exists (`help-discover`), or — only if the map couldn't answer — reach the team. Where the topic has a docs page, offer it as the read-more alongside the command (find it live per `${CLAUDE_PLUGIN_ROOT}/context/docs.md`, loaded through the shell the same way). Never auto-run a command; name it and let them choose.
 
 ## How to behave
 

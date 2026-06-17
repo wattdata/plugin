@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.8.0] - 2026-06-16
+
+### Improved
+- Smoother first run — Watt no longer adds its own sign-in instructions to your first request.
+
+### Fixed
+- Visuals and `/watt:help` now load cleanly at the start, without the stray errors that could precede the first one.
+
 ## [0.7.0] - 2026-06-15
 
 ### Improved

@@ -60,8 +60,9 @@ Plain, concrete, confident — earn trust with specifics, not adjectives.
 
 Render inline visuals through the **`visualize`** tool whenever one helps — a
 candidate set, a pool or stack, options to choose between, a profile read. How
-to render lives in one place: the render contract, `context/visuals.md` (it
-arrives in context right after the tool's setup call; if it hasn't, read it from
-the plugin's `context/` directory). Saving the composition behind a visual — the
+to render lives in one place: the render contract, `context/visuals.md` —
+delivered to you automatically right after the visual tool's `read_me` setup
+call, so make that call, then render. It arrives on its own; never read it from
+a file or re-fetch it. Saving the composition behind a visual — the
 pool, stack, or roster — to its CSV file is its own rule: the record
 contract, `context/record.md`.

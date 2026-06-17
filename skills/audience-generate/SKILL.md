@@ -2,7 +2,7 @@
 name: audience-generate
 description: Generate a person audience from a plain-English brief — discover the signals behind it, score them with the math visible, and compose them into an audience whose reach is measured. The build step behind /watt:audience; routes to the leaf that fits how the audience should be built. Produces a signal stack + measured reach, or a roster — never an export, never contact data. Not a user command — /watt:audience is the front door. Use when a build-shaped ask arrives — "build me an audience of …", "I need about N people who …", "the highest-intent people in-market for X", "where do these people cluster", "a lead list of in-market companies", "match my customer list / build from my customers" — or when a /watt:explore signal pool is ready to become an audience.
 user-invocable: false
-compatibility: Talks to the remote Watt MCP server — network access and browser OAuth on the first tool call. Inline visuals and the closing decision follow the render contract (`context/visuals.md`), degrading gracefully where the host can't render or return a pick.
+compatibility: Requires the remote Watt MCP server (network access).
 ---
 
 # Generate an audience
@@ -63,7 +63,7 @@ No AND/OR/AND_NOT, no boolean "pools" (the OR/AND/AND_NOT groupings), no "boolea
 
 ## The shared spine — every objective leaf composes with this
 
-The leaf settles its target and owns the compose; everything else is here, composed with verbatim — not restated in the leaf. One decision per turn, landed per the render contract (`context/visuals.md`) — same gate discipline as explore. Mention before the first Watt call that a browser sign-in will pop. Track each advisor dispatch as a session task; if the host has no task tools, skip silently.
+The leaf settles its target and owns the compose; everything else is here, composed with verbatim — not restated in the leaf. One decision per turn, landed per the render contract (`context/visuals.md`) — same gate discipline as explore. Track each advisor dispatch as a session task; if the host has no task tools, skip silently.
 
 ### A — Settle the brief, then discover one angle per beat
 

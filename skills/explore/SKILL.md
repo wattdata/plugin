@@ -1,7 +1,7 @@
 ---
 name: explore
 description: Find out what audience signals exist for an idea about people. Describe who you're trying to reach in plain English and see what's out there — which signals Watt has, how big and how fresh each one is, and what related angles are worth a look. A guided, one-question-at-a-time walk, so you get the lay of the land before building anything from it. Start here to size up an idea or get your bearings — "what's out there for runners", "is Watt a fit for X", "what else relates to Y" — or type /watt:explore.
-compatibility: Talks to the remote Watt MCP server — network access and browser OAuth on the first tool call. Inline visuals and the closing decision follow the render contract (`context/visuals.md`), degrading gracefully where the host can't render or return a pick.
+compatibility: Requires the remote Watt MCP server (network access).
 ---
 
 # Explore the Signal Graph
@@ -58,7 +58,7 @@ There is no size goal to collect — don't ask for one. If the user volunteers a
 
 ## The flow
 
-The loop is a **graph-grounded interview**: every question you ask is informed by a probe of what the graph actually holds, and every answer steers the next probe. Mention before the first Watt call that a browser sign-in will pop. When an advisor dispatch starts, track it as a session task and complete it on return — on hosts like Cowork that's the visible heartbeat; if the host has no task tools, skip silently.
+The loop is a **graph-grounded interview**: every question you ask is informed by a probe of what the graph actually holds, and every answer steers the next probe. When an advisor dispatch starts, track it as a session task and complete it on return — on hosts like Cowork that's the visible heartbeat; if the host has no task tools, skip silently.
 
 ### 1 — Open on what the graph holds
 

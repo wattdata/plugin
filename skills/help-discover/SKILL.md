@@ -2,7 +2,7 @@
 name: help-discover
 description: Go and check whether the Signal Graph holds what the user is asking about — the concierge. Given a question about whether the data exists, dispatch the finder to probe live, then synthesize a plain answer — what's there, how big and fresh, or no honest match and the closest thing. Read-only; never sizes, builds, resolves, or exports. The concierge leaf behind /watt:help. Not a user command. Use when the ask is whether Watt has something — "do you have data on X", "is there a signal for Y", "can Watt reach Z", "is Watt any good for W".
 user-invocable: false
-compatibility: Talks to the remote Watt MCP server — network access and browser OAuth on the first tool call. The candidate card is a signal render in the Watt palette. Inline visuals and the closing decision follow the render contract (`context/visuals.md`), degrading gracefully where the host can't render or return a pick.
+compatibility: Requires the remote Watt MCP server (network access).
 ---
 
 # Concierge — does the graph hold it?
@@ -21,7 +21,7 @@ compatibility: Talks to the remote Watt MCP server — network access and browse
 
 ## The flow
 
-One probe-and-answer per turn; render the result, end on a decision, then stop. The probe runs on the user's question alone — asking *is* the go-ahead (per the shared canon); don't re-interview before checking. Mention a browser sign-in will pop before the first Watt call.
+One probe-and-answer per turn; render the result, end on a decision, then stop. The probe runs on the user's question alone — asking *is* the go-ahead (per the shared canon); don't re-interview before checking.
 
 ### 1 — Read the question into concepts
 

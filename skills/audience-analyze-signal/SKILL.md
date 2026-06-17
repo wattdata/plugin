@@ -2,7 +2,7 @@
 name: audience-analyze-signal
 description: Read who a built audience reaches when the signals are already in hand — a signal stack fresh from generate, an explore pool, a pasted audience record, or signals the user names — skip discovery, materialize, and render the two-section read (your signals + discovered). The signals-in-hand way into audience-analyze, behind /watt:audience. Aggregates only — never individual records, never an export. Not a user command. Use when a built audience is in session or the user supplies its signals and asks who's in it — "who's actually in this audience", "what do these people look like".
 user-invocable: false
-compatibility: Talks to the remote Watt MCP server — network access and browser OAuth on the first tool call. Inline visuals and the closing decision follow the render contract (`context/visuals.md`), degrading gracefully where the host can't render or return a pick.
+compatibility: Requires the remote Watt MCP server (network access).
 ---
 
 # Analyze an audience from its signals

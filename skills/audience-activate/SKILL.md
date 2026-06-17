@@ -2,7 +2,7 @@
 name: audience-activate
 description: Export a built audience as a platform-ready file — confirms the platform, the scale, and the identifier types with the user, then materializes the audience and runs the deterministic writer script, returning the finished file and honest row counts. Meta Customer Match, Google Customer Match, and Reddit Ads are the supported platforms. Never runs unconfirmed. Not a user command — /watt:audience is the front door. Use when an export-shaped ask arrives — "export it", "push it to Meta", "push it to Google", "push it to Reddit", the audience as a file.
 user-invocable: false
-compatibility: Talks to the remote Watt MCP server — network access and browser OAuth on the first tool call. python3 runs the bundled writer script. Inline visuals and the closing decision follow the render contract (`context/visuals.md`), degrading gracefully where the host can't render or return a pick.
+compatibility: Requires the remote Watt MCP server (network access) and python3 for the bundled writer script.
 ---
 
 # Activate an audience

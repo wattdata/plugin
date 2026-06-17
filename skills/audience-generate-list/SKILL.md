@@ -2,7 +2,7 @@
 name: audience-generate-list
 description: Build a person audience from an owned list — customers, leads, accounts — resolving it to Watt entity IDs and emitting a roster, or learning what defines it and handing back a tunable signal pool. The list-anchored way into a build, behind /watt:audience. Four plays — resolve-only, expand (households via addresses), lookalike (the signals that define the list, to tune), overlay (score and rank against signals); group and traverse aren't built. Produces a roster of entity IDs or a signal pool — never an export, never contact data. Not a user command — /watt:audience is the front door. Use when a list arrives to build from — "match my customer list", "find more like my customers", "rank my list by intent", "score the people from my last run". A read intent is audience-analyze-list.
 user-invocable: false
-compatibility: Talks to the remote Watt MCP server — network access and browser OAuth on the first tool call. Inline visuals and the closing decision follow the render contract (`context/visuals.md`), degrading gracefully where the host can't render or return a pick.
+compatibility: Requires the remote Watt MCP server (network access).
 ---
 
 # Build an audience from an owned list
