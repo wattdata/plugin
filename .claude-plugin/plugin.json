@@ -3,7 +3,7 @@
   "name": "watt",
   "displayName": "Watt",
   "description": "Build custom audiences in minutes by blending your subject-matter expertise and first-party data with raw signals. Do what used to take teams of data engineers, scientists, and analysts, using Watt's Signal Graph. Traverse petabytes of raw signals in seconds to find your alpha.",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "license": "Apache-2.0",
   "author": {
     "name": "Watt",

@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.9.0] - 2026-06-17
+
+### New
+- `/watt:quickstart` now confirms Watt is connected before your first build and walks you through connecting if it isn't — including the admin route when your plan needs one to enable it; `/watt:help` can walk you through the same.
+- When Watt isn't connected yet, `/watt:quickstart` can now offer a one-click Connect right in the chat.
+- When you export to Meta, Google, or Reddit, `/watt:audience` now tells you your expected audience size — roughly how many of those people the platform will likely reach, in real numbers — and `/watt:help` explains what drives it and how to lift it.
+
+### Improved
+- If Watt ever needs (re)connecting while you're working, `/watt:quickstart`, `/watt:explore`, and `/watt:audience` now consistently show you how to fix it — the connect steps plus links to set it up or have your Claude organization admin enable it.
+- Before exporting, `/watt:audience` now confirms up front that it's connected and ready to run the export, and if it isn't — or your organization's settings block the export — gives the exact steps and a doc link to get unblocked, including a line to forward to your admin.
+- Exporting an audience to Meta, Google, or Reddit now names each platform plainly and describes the audience size you can expect in clearer, everyday language.
+
 ## [0.8.0] - 2026-06-16
 
 ### Improved

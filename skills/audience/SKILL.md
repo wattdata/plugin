@@ -17,7 +17,7 @@ description: Turn an idea into an actual audience. Build a list of people — to
 - **Hands off to:** the three leaves —
   - **`audience-generate`** — compose a new audience: brief + target size band → signals, scored and user-approved → a signal stack with measured reach.
   - **`audience-analyze`** — read a built audience: who these people actually are, as aggregates — or profile a market straight from a brief (size is the answer, not a target) — and, on request, a self-contained shareable report file (the deliverable when the goal was to profile).
-  - **`audience-activate`** — export a built audience as a platform-ready file (Meta and Google Customer Match, Reddit Ads), behind its own explicit confirmation.
+  - **`audience-activate`** — export a built audience as a platform-ready file (Meta, Google, and Reddit), behind its own explicit confirmation.
 
 ## Entry
 
@@ -40,5 +40,5 @@ description: Turn an idea into an actual audience. Build a list of people — to
 
 ## Refuse cleanly
 
-- **An export ask for a platform with no writer script** ("push it to TikTok"). *"Meta and Google Customer Match and Reddit Ads are the supported platforms. Want a Meta, Google, or Reddit file, or should I build and analyze the audience for now?"*
+- **An export ask for a platform with no writer script** ("push it to TikTok"). *"Meta, Google, and Reddit are the supported platforms. Want a Meta, Google, or Reddit file, or should I build and analyze the audience for now?"*
 - **Employer / job-title as the defining criterion.** Redirect to interest, demographic, or location framing before routing.

@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""Reddit Customer Audiences writer — turns a materialized Watt audience CSV
-into Reddit Ads Customer Audience upload files.
+"""Reddit audience writer — turns a materialized Watt audience CSV
+into Reddit upload files.
 
-Owns its match-rate-critical transform in this one file — the column layout,
+Owns its audience-size-critical transform in this one file — the column layout,
 the hash-vs-raw decisions, and the CLI runner. The can't-vary plumbing
 (SHA-256, the Watt CSV reader, presence checks) is imported from ``_common`` —
 see that module's header for why the line falls where it does.
 
-Match-rate-critical, so keep the hashing and column layout stable: Reddit takes
+Audience-size-critical, so keep the hashing and column layout stable: Reddit takes
 two match keys, each in its own single-column file — emails SHA-256-hashed
 (lowercased, trimmed), and mobile-ad IDs SHA-256-hashed (lowercased). Unlike
 Meta and Google, Reddit hashes the device ID rather than sending it raw. The
