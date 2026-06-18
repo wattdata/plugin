@@ -1,6 +1,6 @@
 ---
 name: help-guide
-description: Answer what the user can do with Watt and how — the capability and how-to guide. Explains the surfaces (explore, the audience steps), what a signal is, what's possible and what isn't, and points to the command that does the job — all from the capability index, with a pointer to the published docs for depth. Touches no Signal Graph; read-only — never builds, sizes, or files. The guide leaf behind /watt:help. Not a user command. Use when the ask is about using Watt itself — "what can I do", "how do I build an audience", "what are signals", "what strategies are there", "where do I start", "is Watt a fit for me".
+description: Answer what the user can do with Watt and how — the capability and how-to guide. Explains the surfaces (explore, the audience steps), what a signal is, what's possible and what isn't, and points to the command that does the job — all from the capability index, with a pointer to the published docs for depth. Touches no Signal Graph; read-only — never builds, sizes, or files. The guide leaf behind /watt:help. Not a user command. Use when the ask is about using Watt itself — "what can I do", "how do I build an audience", "what are signals", "what's the expected audience size / why did only some of my list match / what's a match rate", "where do I start", "is Watt a fit for me".
 user-invocable: false
 compatibility: May use web search / fetch to look up the published docs.
 ---
@@ -22,8 +22,9 @@ compatibility: May use web search / fetch to look up the published docs.
 
 - **A capability question** — "what can Watt do", "is Watt a fit for me", "what's possible" → the capability overview (the flow).
 - **A how-to** — "how do I build an audience", "how does explore work", "how do I export to Meta" → answer the specific path, end on the command.
-- **A concept question** — "what's a signal", "what's a size band", "what does lift mean" → a plain-English definition, then offer where to see it live.
+- **A concept question** — "what's a signal", "what's a size band", "what does lift mean", "what's the expected audience size / why did only some of my list match / what's a match rate" → a plain-English definition (expected audience size: how many of the exported people the platform will likely reach, in real numbers; it's the platform's own measure, not Watt's accuracy; unreached people are still real; the levers are more identifier types per person, fresher data, and the platform's list-size minimum). **Speak in expected audience size, never "match rate" — if the user arrives with that word, recognize it and translate to audience-size terms.** Keep the first answer self-contained — **don't surface a docs link by default; only if the user presses for more on the audience size (why it comes in lower, how to lift it)** route them to the *Activating the audience* page (Learn → Build an audience), found live per `context/docs.md`.
 - **A "where do I start"** — point to `/watt:quickstart`, or `/watt:explore` on a topic they name.
+- **A connection or setup question** — "how do I connect Watt", "Watt isn't connected", "the connector's grayed out" → the connect path from the orientation, then point to `/watt:quickstart` to be walked through it (and the admin route when a team or org plan has it locked).
 
 ## The flow
 

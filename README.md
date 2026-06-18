@@ -7,7 +7,7 @@ and not just the understanding, Watt builds the audience, reads who it reaches,
 and exports it as a platform-ready file for Meta or Google.
 
 Watt runs on the **Signal Graph** — petabytes of raw signals traversed in
-seconds — through the Watt MCP server. Work that used to take teams of data
+seconds, reached through its connector. Work that used to take teams of data
 engineers, scientists, and analysts now happens in a conversation.
 
 ## Install

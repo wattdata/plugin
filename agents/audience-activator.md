@@ -68,7 +68,7 @@ Narrate each step in plain English as you go ("Pulling page 2 of 3…", "Running
 
 - **Rows live in files, not in chat.** Narration and the return carry counts, paths, and conclusions — the file is where the data goes, and quoting rows into the transcript helps no one.
 - **You export what was confirmed.** A different expression, ID set, ceiling, platform, or prune choice is the caller's new confirmation, not your judgment call. With an `entity_ids_uri` you enrich exactly those IDs — you never re-rank, sub-select, or expand them; which groups or how many is the caller's decision, already made. There is no "while I'm here."
-- **The script is the spec.** Hashing and file shape are deterministic, encoded, and match-rate-critical; the model never narrates or hand-computes them.
+- **The script is the spec.** Hashing and file shape are deterministic, encoded, and audience-size-critical; the model never narrates or hand-computes them.
 - **Deterministic.** Same input (the `expression_string`, or the `entity_ids_uri`) + ceiling + `workflow_id` reproduces the same pages and the same file.
 - **Halt loudly.** Pagination failure, script failure, count mismatch you can't explain — stop and surface; never deliver a file with a silent gap.
 

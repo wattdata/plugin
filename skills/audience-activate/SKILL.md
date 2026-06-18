@@ -1,6 +1,6 @@
 ---
 name: audience-activate
-description: Export a built audience as a platform-ready file — confirms the platform, the scale, and the identifier types with the user, then materializes the audience and runs the deterministic writer script, returning the finished file and honest row counts. Meta Customer Match, Google Customer Match, and Reddit Ads are the supported platforms. Never runs unconfirmed. Not a user command — /watt:audience is the front door. Use when an export-shaped ask arrives — "export it", "push it to Meta", "push it to Google", "push it to Reddit", the audience as a file.
+description: Export a built audience as a platform-ready file — confirms the platform, the scale, and the identifier types with the user, then materializes the audience and runs the deterministic writer script, returning the finished file and honest row counts. Meta, Google, and Reddit are the supported platforms. Never runs unconfirmed. Not a user command — /watt:audience is the front door. Use when an export-shaped ask arrives — "export it", "push it to Meta", "push it to Google", "push it to Reddit", the audience as a file.
 user-invocable: false
 compatibility: Requires the remote Watt MCP server (network access) and python3 for the bundled writer script.
 ---
@@ -9,9 +9,9 @@ compatibility: Requires the remote Watt MCP server (network access) and python3 
 
 ## Purpose
 
-`audience-activate` — the export step behind `/watt:audience` — turns a built audience into the deliverable: a file shaped to the target platform's spec by its bundled writer script — one script per platform under `scripts/writers/`. The writer scripts present are the platforms that ship — **Meta Customer Match, Google Customer Match, and Reddit Ads**, each its own self-contained writer script. The user picks the platform and confirms exactly what will happen, and walks away with the file, its row counts, and the reproducibility handle.
+`audience-activate` — the export step behind `/watt:audience` — turns a built audience into the deliverable: a file shaped to the target platform's spec by its bundled writer script — one script per platform under `scripts/writers/`. The writer scripts present are the platforms that ship — **Meta, Google, and Reddit**, each its own self-contained writer script. The user picks the platform and confirms exactly what will happen, and walks away with the file, its row counts, and the reproducibility handle.
 
-**Nothing exports unconfirmed.** Before any dispatch, state plainly: the platform, roughly how many people, which identifier types ride along, what the platform's spec does to them, and the exact row ceiling. Each platform's writer owns that transform, and they differ — confirm the one the user picked: a **Meta** file **hashes** emails, phones, names, cities, states, zips, and country, with mobile-ad IDs riding raw (Meta's one unhashed match key); a **Google** file hashes emails, phones, and names but keeps country and zip **in the clear**, with mobile device IDs written to a separate unhashed list; a **Reddit** file hashes emails and mobile-ad IDs, each written to its own list. The user's explicit yes — including that number — is the gate. Anything truncated or pruned is named **before** the run, never discovered after.
+**Nothing exports unconfirmed.** Before any dispatch, state plainly: the platform, roughly how many people, which identifier types ride along, what the platform's spec does to them, and the exact row ceiling. Each platform's writer owns that transform, and they differ — confirm the one the user picked: a **Meta** file **hashes** emails, phones, names, cities, states, zips, and country, with mobile-ad IDs riding raw (the one identifier Meta keeps in the clear); a **Google** file hashes emails, phones, and names but keeps country and zip **in the clear**, with mobile device IDs written to a separate unhashed list; a **Reddit** file hashes emails and mobile-ad IDs, each written to its own list. The user's explicit yes — including that number — is the gate. Anything truncated or pruned is named **before** the run, never discovered after.
 
 ## Works with
 
@@ -21,20 +21,31 @@ compatibility: Requires the remote Watt MCP server (network access) and python3 
 
 ## Language
 
-This surface says *export*, *Customer Match*, *hashed* — and explains the hashing once, plainly: *"Customer Match files carry hashed identifiers — your file holds digests, not raw emails, except the fields the platform matches in the clear."* (Meta hashes everything but the mobile-ad ID; Google leaves country and zip in the clear and lists device IDs unhashed; Reddit hashes both its match keys, emails and mobile-ad IDs.) The stack vocabulary (signals, must-haves, exclusions) carries over from generate; AND/OR/AND_NOT still never reach the user.
+This surface says *export*, *hashed* — and explains the hashing once, plainly: *"Export files carry hashed identifiers — your file holds digests, not raw emails, except the fields the platform reads in the clear."* (Meta hashes everything but the mobile-ad ID; Google leaves country and zip in the clear and lists device IDs unhashed; Reddit hashes its two identifiers, emails and mobile-ad IDs.) It also names the **expected audience size** the honest way — the real-people range the platform will likely reach from this file, shown as a count, never a percentage or a guarantee (the full posture is below). Watt's word is *audience size*, never *match rate* — if the user arrives with "match rate," recognize it and answer in audience-size terms, never adopt it. The stack vocabulary (signals, must-haves, exclusions) carries over from generate; AND/OR/AND_NOT still never reach the user.
 
 ## Entry
 
-- **A built signal stack is in session** (fresh from generate or analyze). Go to the confirmation (flow step 1).
+- **A built signal stack is in session** (fresh from generate or analyze). Preflight network access (flow step 1), then go to the confirmation (flow step 2).
 - **A re-supplied audience record** — read from the saved record file in the working directory, or pasted in: signals with names and hashes by role group, plus reach, from a past session. Take it as given: its role groups reconstruct the expression exactly as built — a deterministic reading, not a modification — its `location:` line carries the fence the run re-applies (`none (national)` means no filter — dropping the line would silently widen the export), its `entity_type` rides into the dispatch, and its reach is "measured then" until the run re-measures. **A refresh-shaped re-supply** ("re-run this export") is exactly this path — the materialization is the refresh — and after delivery, **re-write the audience record** per the record contract (`context/record.md`) with today's measured total against the header's original target and the `· refreshed` suffix (`reach 26.1M (band 1M–5M) · refreshed`), so the user walks away with the updated recipe alongside the export file.
-- **A roster** — from any roster-emitting strategy (grouping or crossing from `audience-generate-search`; expand or overlay from `audience-generate-list`): an ID-only entity set already chosen, with classification columns that vary by strategy. **Grouping** gives ranked groups (`group_label`, `cell_lift`, `cell_size`, `rank`; `roster_uri` for the whole, an `entity_ids_uri` per group). **Overlay** gives a **ranked list** (`overlay_score`, `signals_matched`, `rank` — rows, not groups). **Crossing** and **expand** give an **unordered membership set** — no rank, no groups (crossing: `entity_id` + `source_provenance`; expand: `entity_id` + match confidence columns). Whichever it is, the entities are already chosen — there's no expression to materialize; the export shape is the choice (flow step 1). Take the record as given; never re-rank, re-group, or re-score it.
+- **A roster** — from any roster-emitting strategy (grouping or crossing from `audience-generate-search`; expand or overlay from `audience-generate-list`): an ID-only entity set already chosen, with classification columns that vary by strategy. **Grouping** gives ranked groups (`group_label`, `cell_lift`, `cell_size`, `rank`; `roster_uri` for the whole, an `entity_ids_uri` per group). **Overlay** gives a **ranked list** (`overlay_score`, `signals_matched`, `rank` — rows, not groups). **Crossing** and **expand** give an **unordered membership set** — no rank, no groups (crossing: `entity_id` + `source_provenance`; expand: `entity_id` + match confidence columns). Whichever it is, the entities are already chosen — there's no expression to materialize; the export shape is the choice (the confirmation, flow step 2). Take the record as given; never re-rank, re-group, or re-score it.
 - **A signal pool** (an `/watt:explore` session's kept signals, or a lookalike pool) with an export intent. A pool has no expression yet — **auto-compose it to the default stack first**: pool-marked must-haves *all-of*, exclusions *none-of*, the rest *any-of*; **if the pool carries no role markers, ask once** (*"any must-haves or must-have-nots, or export them all as one group?"*) before composing. A deterministic reading of the user's picks (the same operation as reconstructing a record's role groups), never a strategy compose — note plainly that a *tuned* build is `audience-generate`'s lane if they want it. Measure the headcount once (count-only), then go to the confirmation with that real number.
 - **No audience anywhere.** Nothing to export — route to the `audience-generate` step honestly.
 - **A platform with no writer script** ("push to TikTok"). Say what ships today — Meta, Google, and Reddit — before anything else; offer a shipped-platform run if it serves.
 
 ## The flow
 
-### 1 — Pick the platform, confirm with the real numbers
+The preflight (step 1) precedes **every** path in — a built stack, a re-supplied record, a roster, or a pool — before any confirmation or number reaches the user.
+
+### 1 — Preflight: confirm the export's tools are reachable
+
+The export runs through the Signal Graph's download/upload tools (`generate_download_url`, `generate_upload_url`). So **before** naming the platform menu or quoting a number, confirm those tools are present on the connection and the connector is authenticated — check that the tools are *registered and available*, not by firing a probe call with placeholder arguments (a missing-argument or validation error isn't a connection failure, and acting on it would push a connected user into the connect flow wrongly). This is cheap, and it spares the user from authorizing an export that then dies because the connector was never live.
+
+What this catches is a missing or unauthenticated connector — caught up front, here. What it **cannot** catch is the code-execution network-egress block: those tools return a presigned URL successfully even when egress is denied, so that failure only surfaces later, when the activator fetches the artifact — and it's handled at pull time by its own entry in [Failure modes](#failure-modes), not here.
+
+- **Tools present, connector authenticated** → note it in a line and move to the platform pick.
+- **Tools absent, or a call comes back unauthenticated** → you don't have a live connection to run the export. Stop here, before any confirmation; don't retry blindly, don't loop the auth tools, and don't improvise a local file. Come back to the user with the fix — the connect path per the orientation's *Getting connected* note, and the Claude organization guide (https://wattdata.ai/docs/integrate/claude-organization) to send their admin, **always**. Then have them re-run once it's connected.
+
+### 2 — Pick the platform, confirm with the real numbers
 
 Resolve the platform's writer script first — `scripts/writers/<platform>.py` in this skill's own directory (today that's `scripts/writers/meta.py`, `scripts/writers/google.py`, and `scripts/writers/reddit.py`; if the runtime relocated the files, locate it before promising anything). The `<platform>.py` scripts present are the platform menu (a file whose name begins with `_`, like `_common.py`, is shared plumbing — never a platform): today that's **Meta, Google, and Reddit**, so the platform is the user's **first pick** — name the menu and let them choose before anything else. Run `python3 <script> --list-identifiers` and use its answer — for Meta and Google: email, phone, name, address, maid; for Reddit: email, maid — as the identifier list you confirm; the script is the source of truth, not memory.
 
@@ -48,17 +59,17 @@ Work out the ceiling honestly: the server's export budget caps a five-identifier
 
 Name the shape choice in the confirmation alongside platform, scale, and identifiers — for one-file-per-group, the scale is per file and the file count is part of what the user authorizes.
 
-Then the gate — landed per the render contract (`context/visuals.md`) — one decision, all the facts in it. State the chosen platform's actual transform; they differ, so confirm the right one:
+Then the gate — landed per the render contract (`context/visuals.md`) — one decision, all the facts in it. State the chosen platform's actual transform; they differ, so confirm the right one. Each gate also carries the **expected audience size** — of the people in this run, roughly how many the platform will likely reach on its side — computed from the run's people ceiling by `audience_size_range.py`, this skill's own range script (`python3 ${CLAUDE_PLUGIN_ROOT}/skills/audience-activate/scripts/audience_size_range.py <people_ceiling>` → the rounded `low–high` count to quote; if the runtime relocated the files, locate it the same way as the writer scripts before promising anything). It's a platform-side estimate set in real people, **never a percentage** and never a guarantee — see [expected audience size](#expected-audience-size-the-posture-we-hold):
 
-> **Meta** — Exporting **weekend hikers**, reach 2.4M, this run pulls up to **600,000 people** with email, phone, name, address, and mobile-ID identifiers, written into a Meta Customer Match file (PII hashed; mobile-ad IDs raw, as Meta matches them). People with no email or phone are dropped (Meta can't match them). Go?
+> **Meta** — Exporting **weekend hikers**, reach 2.4M, this run pulls up to **600,000 people** with email, phone, name, address, and mobile-ID identifiers, written into a Meta file (PII hashed; mobile-ad IDs raw, as Meta reads them in the clear). People with no email or phone are dropped (Meta has no way to reach them). Of these, your expected audience size on Meta is **~300K–480K** people — a platform-side estimate, not a guarantee. Go?
 
-> **Google** — Exporting **weekend hikers**, reach 2.4M, this run pulls up to **600,000 people** into a Google Customer Match file (emails, phones, and names hashed; country and zip in the clear; mobile device IDs written to a separate unhashed list). People with no email, phone, or device ID are dropped (nothing left for Google to match). Go?
+> **Google** — Exporting **weekend hikers**, reach 2.4M, this run pulls up to **600,000 people** into a Google file (emails, phones, and names hashed; country and zip in the clear; mobile device IDs written to a separate unhashed list). People with no email, phone, or device ID are dropped (nothing left for Google to reach them by). Of these, your expected audience size on Google is **~300K–480K** people — a platform-side estimate, not a guarantee. Go?
 
-> **Reddit** — Exporting **weekend hikers**, reach 2.4M, this run pulls up to **600,000 people** into a Reddit Ads Customer Audience file (emails and mobile-ad IDs hashed, each written to its own list). People with no email or device ID are dropped (nothing left for Reddit to match). Go?
+> **Reddit** — Exporting **weekend hikers**, reach 2.4M, this run pulls up to **600,000 people** into a Reddit file (emails and mobile-ad IDs hashed, each written to its own list). People with no email or device ID are dropped (nothing left for Reddit to reach them by). Of these, your expected audience size on Reddit is **~300K–480K** people — a platform-side estimate, not a guarantee. Go?
 
 An explicit yes including the number is the only thing that opens the gate. "Just do it" without the scale on screen is not a confirmation — put the numbers up and ask once.
 
-### 2 — Dispatch the export
+### 3 — Dispatch the export
 
 Dispatch `audience-activator` with the confirmed platform, the confirmed ceiling, the location, the artifact's `workflow_id`, the script's absolute path, and the prune choice — plus the audience itself, in whichever form the input takes:
 
@@ -67,12 +78,13 @@ Dispatch `audience-activator` with the confirmed platform, the confirmed ceiling
 
 Narrate its progress as it reports — pages pulled, transform running, counts moving. Track the dispatch as a session task; complete it on return.
 
-### 3 — Deliver, with the gaps named
+### 4 — Deliver, with the gaps named
 
 Render the return:
 
 - **The file(s)** — path and row count of **each** file the writer produced. Some platforms emit more than one, and row counts differ by file: Meta writes one `meta_audience.csv` whose rows can exceed persons (one row per identifier pair); Google writes two — `google_audience.csv` (one row per person) and `google_audience_maid.csv` (the device-ID list, a separate match path, so its count differs from the person file); Reddit writes two — `reddit_email.csv` and `reddit_maid.csv`, each a separate match path with its own count. Report every file, not just the first.
-- **The reconciliation** — total matched vs exported vs pruned, each named. A shortfall the user didn't hear about before the run is a failure; repeat it here regardless.
+- **The reconciliation** — total resolved vs exported vs pruned, each named. A shortfall the user didn't hear about before the run is a failure; repeat it here regardless.
+- **The expected audience size** — of the people exported, roughly how many the platform will likely reach on its side, from `audience_size_range.py` on the **actual exported people count** — the post-prune people count, not file rows (Meta's rows can exceed persons) — `python3 ${CLAUDE_PLUGIN_ROOT}/skills/audience-activate/scripts/audience_size_range.py <exported_people>`. State it in real people, never a percentage: *"Of the 600,000 people in your file, your expected audience size on the platform is ~300K–480K."* Then the one-line posture, plainly: that linked share is the platform's own measure of who it already has on its side, **not** a measure of these people's realness or this audience's accuracy; every exported row is a real person, and one the platform doesn't reach just isn't on its side. If the user wants a larger reached audience, name the levers honestly: more identifier types per person, fresher identifiers, and meeting the platform's own list-size minimum. See [expected audience size](#expected-audience-size-the-posture-we-hold) for the full posture and the lines we won't cross.
 - **The verification line** — the activator's shape-check conclusion (each output file's header matches the platform's spec, with identifier fields digested where the spec hashes them and plaintext where it doesn't).
 - **The handles** — `workflow_id` (the same export, reproducible) and the raw page URLs (1-hour traceability; they carry the unhashed identifier values if the user needs those — the platform file is the deliverable).
 
@@ -91,6 +103,16 @@ cat > "$STATE_DIR/state.json" <<EOF
 EOF
 ```
 
+## Expected audience size: the posture we hold
+
+When the file is uploaded, the platform reaches only the share of the people in it that it already has on its own side. It's always below the count we handed over, and what drives it sits largely outside Watt: the platform's own identity graph, the customer's ad account, how fresh the identifiers are, the channel. **Watt's language for that reached share is the expected audience size** — a real-people range, always. (The platform's dashboard calls the same thing a *match rate* and shows it as a percentage; if the user arrives with that word, answer in audience-size terms — recognize it, don't adopt it.) Hold one honest posture, every run:
+
+- **What it is, and isn't.** The reached share is the *platform's* measure — who that platform already has on its side — **not** a measure of Watt's data quality or this audience's accuracy. Two platforms will reach different amounts of the identical file; that's about them, not the people.
+- **Set it in real people, never a percentage.** We don't quote a percentage — a number we don't control, and one that anchors expectations on the platform's side. We show the **expected audience size** for this export's size (`scripts/audience_size_range.py`, the single source of the band), so the read is "of these N people, your expected audience size is X–Y" — concrete, and clearly an estimate.
+- **A non-reached row is not a wasted record.** The person is real and correctly in the audience; the platform simply doesn't have them on its side. An unreached row is the platform's coverage gap, not a wrong or junk record.
+- **The levers a customer actually has.** More identifier types per person (an email *and* a phone *and* a mobile ID reach more often than any one alone), fresher identifiers, and meeting the platform's list-size minimum. Hashing format is **not** a customer lever — the writer script produces exactly the digest each platform matches on, so a "wrong hash" can't cost reach here.
+- **The line we will not cross.** Never guarantee an audience size or a reached count. Never imply Watt's counts equal deliverable reach on a platform — the exported count is real people; how many it reaches is the platform's to report. Promise the audience is real and correctly built; never promise how much of it a given platform will reach.
+
 ## How to behave
 
 - **The gate is the product.** Every fact in the confirmation — platform, count, identifiers, what the spec does to them, prune — is there because the user is authorizing a real export at real scale. Never soften, batch, or skip it; never treat an earlier session's yes as this run's yes.
@@ -101,14 +123,19 @@ EOF
 
 ## Refuse cleanly
 
-- **"Skip the hashing / give me the raw emails."** The Meta file is hashed because that's what Meta matches on — a raw file would be rejected. The raw page URLs from the run carry the unhashed values for an hour; point there.
-- **A platform with no writer script.** *"Meta Customer Match, Google Customer Match, and Reddit Ads are the supported platforms."* Don't improvise a CSV "close enough" for another platform — its layout and hashing rules differ, and a wrong file burns the user's match rate.
+- **"Skip the hashing / give me the raw emails."** The Meta file is hashed because that's the form Meta requires — a raw file would be rejected. The raw page URLs from the run carry the unhashed values for an hour; point there.
+- **A platform with no writer script.** *"Meta, Google, and Reddit are the supported platforms."* Don't improvise a CSV "close enough" for another platform — its layout and hashing rules differ, and a wrong file shrinks the audience the platform can reach.
 - **"Export it all" past the budget.** The 600K-per-run ceiling is the server's export budget, not a preference — offer the run at the ceiling, honestly framed.
+- **"Guarantee me an X% match" / "promise these will all match."** No — how much a platform reaches is the platform's to report, driven by factors outside Watt (see [expected audience size](#expected-audience-size-the-posture-we-hold)). Recognize the "match" framing, answer in audience-size terms: give the honest expected audience size and the real levers; never a guaranteed rate or count, and never imply our counts equal what the platform will reach.
 - **An export with no built audience.** Generate first — there's nothing confirmed to pull.
 
 ## Failure modes
 
 - **A page fails or expires mid-run.** The activator halts and surfaces it; tell the user what was pulled and that no file was produced from a partial pull. Re-running with the same `workflow_id` is the recovery.
+- **A Signal Graph call fails on a connection or authentication problem** — including the activator coming back reporting the connector isn't authenticated. This is the connector itself, not the egress block below: that's not a transient to retry and not yours to work around — don't loop the connect or `authenticate` / `complete_authentication` tools, don't go diagnosing the connector or the MCP registry, and don't press on. Stop and come back to the user with the fix per the orientation's *Getting connected* note — the connect path, the setup docs (https://wattdata.ai/docs/get-started/quickstart), and the Claude organization guide to send their admin (https://wattdata.ai/docs/integrate/claude-organization), always.
+- **Network egress blocks the download (Cowork, a Team or Enterprise org).** In Cowork the transform runs in the code-execution sandbox, which enforces the org's network-egress policy; when that policy blocks the Watt artifact storage, the activator can't pull the page and halts. Don't retry or improvise a local file — the artifact URL is presigned and rotates, so allowlisting one domain won't hold; egress has to be opened fully, an org-admin setting and the only fix. Hand the user the path and a line to forward to their admin, then have them re-run here once it's open:
+  - **The admin opens egress** in **Organization settings → Capabilities → Code execution → Allow network egress** (https://claude.ai/admin-settings/capabilities): set the **Domain allowlist** to **All domains**, then save. A line to forward: *"In our Claude organization settings, set Code execution → Allow network egress → Domain allowlist to All domains."*
+  - **It takes effect on a new session.** After saving, the user closes and reopens Cowork — the policy applies only to a fresh session — then re-runs. If it still fails, fully log out of Claude and back in, then re-run.
 - **The server rejects the request over its cost budget.** It suggests a lower limit — bring that number back to the user as a fresh confirmation; never lower it silently, and never change the expression to chase a smaller count.
 - **The script errors.** Surface its message and stop; the transform is never hand-finished.
 - **The confirmation gate must be answered.** However it lands per the render contract, nothing runs until the user answers it.

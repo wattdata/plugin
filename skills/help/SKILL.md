@@ -38,6 +38,7 @@ The leaves inherit these; they don't restate them.
 ## Entry
 
 - **A capability or how-to question** — "what can I do with Watt", "how do I build an audience", "what's a signal", "what strategies are there", "where do I start" → `help-guide`.
+- **A connection or setup question** — "how do I connect Watt", "Watt isn't connected", "the connector's grayed out", "do I need to install something" → `help-guide`, which explains the connect path and points to `/watt:quickstart` to be walked through it. (A not-connected state is a setup gap to resolve, not a bug to file.)
 - **A question about whether the graph holds something** — "do you have data on X", "is there a signal for Y", "can Watt reach Z" → `help-discover`, which goes and checks.
 - **A problem, a request, or a human ask** — "something's broken / it's returning wrong data", "you should have a signal for X", "I wish Watt could…", "let me talk to a person" → `help-ticket` (it drafts; it files only on confirm).
 - **A status or list ask** — "what have I filed", "status of WATT-212", "did my bug get fixed" → `help-ticket` (a read).

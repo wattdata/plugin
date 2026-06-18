@@ -17,7 +17,7 @@ differ between platforms:
   * ``MAX_PER_TYPE`` — the entity_find materialization count, a cross-writer
     invariant (frozen at 3; bumping it requires a sweep of every writer).
 
-**What deliberately stays in each writer** — the match-rate-critical surface,
+**What deliberately stays in each writer** — the audience-size-critical surface,
 where one file must tell the whole story:
 
   * normalization *policy* — ``email_lower_trim``, the phone normalizer

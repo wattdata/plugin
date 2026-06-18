@@ -19,11 +19,13 @@ grounded question at a time. So "what does Watt have on *X*?" is answered by
 | `/watt:audience` | The audience-lifecycle front door — routes to build / profile / read / export. Carries an explore session's kept signals straight in; takes an owned list (customers, leads) as a build anchor too. | "build me an audience of …", "match my customer list", "find more like my customers", "who's in this audience?", "an audience profile for my client", "export it to Meta / Google / Reddit" |
 | `/watt:help` | **Get unstuck with Watt.** Answers what you can do and how, checks live whether the graph holds the data you're after, or reaches the team (bug · signal request · feature request · human). Answers first — a ticket is the last resort. | "what can Watt do", "how do I build an audience", "do you have data on *X*", "something's broken", "I need a signal for *Y*", "I need a human", "what have I filed / status of WATT-212" |
 
+**Getting connected.** Watt runs on its **Signal Graph connector**, enabled once per host. `/watt:quickstart` confirms the connection on its first beat and walks a new user through enabling it, including the admin route when a team or org plan has it locked. The exact path lives in the orientation's *Getting connected*.
+
 ## Audience steps — reached by routing under `/watt:audience` (not separate commands)
 
 - **generate** — build a person audience, anchored on what the user has in hand. **From a description**: discover the signals behind the brief, score them, and compose to the objective — a target size band, the maximum credible reach, or the highest-intent few — or partition the audience into its top groups, or cross the employment graph to a B2B set. **From an owned list** (customers, leads): match it tight, expand it to the widest identity match (households via addresses), score and rank it against signals ("who's hot"), or learn what defines it and hand back the signals to build from. Produces a signal stack + measured reach, or a roster of entity IDs; no export. (Profiling a market — "how many / who's in" — lives in *analyze*, where the headcount is the answer.)
 - **analyze** — read who an audience reaches, as aggregates over a deterministic sample (its own signals by share, the traits that define it by lift, skews, freshness); writes a shareable report file on request. Three ways in: a plain-English brief, signals already in hand, or a list of people. Never individual records.
-- **activate** — export a built audience as a platform-ready file (Meta and Google Customer Match, Reddit Ads), behind an explicit platform/scale/identifier confirmation.
+- **activate** — export a built audience as a platform-ready file (Meta, Google, and Reddit), behind an explicit platform/scale/identifier confirmation.
 
 ## Help steps — reached by routing under `/watt:help` (not separate commands)
 

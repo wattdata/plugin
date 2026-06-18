@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""Meta Customer Match writer — turns a materialized Watt audience CSV into a
-Meta Customer Match upload file.
+"""Meta audience writer — turns a materialized Watt audience CSV into a
+Meta upload file.
 
-Owns its match-rate-critical transform in this one file — the column layout,
+Owns its audience-size-critical transform in this one file — the column layout,
 the hash-vs-raw decisions, the phone normalizer, and the CLI runner. The
 can't-vary plumbing (SHA-256, RFC 4180 escaping, the Watt CSV reader, address
 and name parsing, presence checks) is imported from ``_common`` — see that
 module's header for why the line falls where it does.
 
-Match-rate-critical, so keep the hashing and column layout stable: Meta SHA-256
+Audience-size-critical, so keep the hashing and column layout stable: Meta SHA-256
 hashes every field except the mobile-ad ID (sent raw), and wants phone digits
 only (no leading ``+``). Deterministic — the same input always produces the
 same output.

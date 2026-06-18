@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""Google Customer Match writer — turns a materialized Watt audience CSV into
-Google Customer Match upload files.
+"""Google audience writer — turns a materialized Watt audience CSV into
+Google upload files.
 
-Owns its match-rate-critical transform in this one file — the column layout,
+Owns its audience-size-critical transform in this one file — the column layout,
 the hash-vs-raw decisions, the phone normalizer, and the CLI runner. The
 can't-vary plumbing (SHA-256, RFC 4180 escaping, the Watt CSV reader, address
 and name parsing, presence checks) is imported from ``_common`` — see that
 module's header for why the line falls where it does.
 
-Match-rate-critical, so keep the hashing and column layout stable: Google
+Audience-size-critical, so keep the hashing and column layout stable: Google
 SHA-256 hashes email / phone / first / last, leaves country and zip in the
 clear, keeps phone in E.164 (the leading ``+``), and writes mobile device IDs
 raw to a separate one-column file. (That is the inverse of Meta on country/zip,
