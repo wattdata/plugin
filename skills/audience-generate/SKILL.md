@@ -24,7 +24,7 @@ One spine, many ways to compose. This skill owns the shared spine every build sh
 
 You own the conversation, the elicitation, the scoring dispatch, and the rendering; the heavy work is dispatched. Pass signals to advisors by `trait_hash`, never display name alone.
 
-- **Called by:** the `/watt:audience` router — often carrying an `/watt:explore` signal pool as the seed (see Entry); and `quickstart` — which drives this flow as written for a first-run user, arriving with the brief and landing mode already settled (route silently on them) and delivering the landing offer as its junction.
+- **Called by:** the `/watt:audience` router — often carrying an `/watt:explore` signal pool as the seed (see Entry).
 - **Dispatches** (the shared discovery — the same advisors explore uses, here ending in a built audience):
   - **`signal-finder`** — one committed angle → validated candidate signals with evidence.
   - **`signal-profiler`** — scores the gathered signals against the model (relevance · freshness · rarity/specificity · breadth/size · coverage), grounded on the brief, so the user can see how each stacks up and curate. Traits-only — it never touches a set of people.
@@ -165,4 +165,4 @@ EOF
 
 - **`signal-profiler` errors or returns thin.** Say so; surface the candidates in the finder's similarity order with their evidence, and let the user pivot from there — never hand-score to fill the gap.
 - **A reach probe errors mid-compose.** The strategy worker halts and surfaces it; show the user where the build stopped and what was measured up to that point — never fill the gap with an estimate.
-- **A Signal Graph call fails on a connection or authentication problem** — including a worker that comes back reporting the connector isn't authenticated. That's not a transient to retry and not yours to work around: don't loop the connect or `authenticate` / `complete_authentication` tools, don't go diagnosing the connector or the MCP registry, and don't press on. Stop and come back to the user with the fix per the orientation's *Getting connected* note — the connect path, the setup docs (https://wattdata.ai/docs/get-started/quickstart), and the Claude organization guide to send their admin (https://wattdata.ai/docs/integrate/claude-organization), always.
+- **A Signal Graph call fails on a connection or authentication problem** — including a worker that comes back reporting the connector isn't authenticated. That's not a transient to retry and not yours to work around: don't loop the connect or `authenticate` / `complete_authentication` tools, don't go diagnosing the connector or the MCP registry, and don't press on. Stop and send the user to `/watt:quickstart` to get the connection fixed — it owns the connect path and the recovery docs.

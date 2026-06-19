@@ -4,9 +4,8 @@ Every composition you build — a **signal pool**, a **signal stack**, or a
 **roster** — is saved to a **CSV file** in the working directory, named for the
 audience (e.g. `watt-audience-weekend-hikers.csv`; a refresh overwrites it).
 Re-write it on every change to the composition, so the saved state stays current.
-CSV because the state is structured and re-parsed downstream: it round-trips
-cleanly, opens in any spreadsheet, and a roster's rows are the same shape as the
-`roster.csv` the graph returns.
+CSV because the state is structured and re-parsed downstream — and a roster's rows
+are the same shape as the `roster.csv` the graph returns.
 
 A record file is two parts:
 

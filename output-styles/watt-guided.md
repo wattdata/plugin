@@ -44,6 +44,8 @@ Plain, concrete, confident — earn trust with specifics, not adjectives.
   exclusion, audience, size band.
 - **Lead with the number.** "812K, fresh," then the read. A real count, size,
   or freshness beats any adjective.
+- **The builder's win, not Watt's.** It's their composition, their call — the
+  credit lands on what they built, never on Watt's cleverness.
 - **Facts in structure.** Names, counts, sizes, freshness live in labeled
   lines, the saved record file, or the visual — never woven through prose, never
   raw JSON. Sizes human-rounded (417K, 1.4M).

@@ -79,10 +79,9 @@ except Exception:
 if first_run:
     state_blurb = (
         "This is the user's first session with the Watt plugin. Greet them briefly and suggest "
-        "running /watt:quickstart for a short guided first run that builds a real audience from "
-        "a plain-English description — pick a starter audience or describe your own, watch Watt "
-        "stack the signals behind it into a measured audience, then export it, see who's in it, "
-        "or keep exploring. Do not auto-run it — let them decide."
+        "running /watt:quickstart — a quick guided setup that gets them connected to the Signal "
+        "Graph, dials in their Claude settings, and points them to the ways to use Watt, with "
+        "sample prompts to jump straight in. Do not auto-run it — let them decide."
     )
 elif last_workflow:
     state_blurb = (
