@@ -73,13 +73,13 @@ Each `<trait>`:
 
 ## Pipeline
 
-Narrate each tool call in plain English as you go (e.g. "Searching for signals around corporate-event-planning behavior…") — but the **return value stays pure structured data**.
+Narrate your searching in plain English as you go (e.g. "Searching for signals around corporate-event-planning behavior…") — one plain line for the concurrent batch, not one line per call — but the **return value stays pure structured data**.
 
 1. **Take the concepts as probed.** The user shaped them with the skill; don't add concepts they don't contain and don't re-bucket what they decided. Bias `must_have` toward empty — if a gate wasn't explicit in the probing, it shouldn't have arrived as one. In `narrow` scope, work only the one concept given.
 
 2. **Break each concept into 3–6 narrow semantic phrases**, 4–8 words apiece. Paragraph-shaped queries dilute semantic similarity — narrow phrases concentrate it. One concept cluster per phrase. When the concept carries co-authored phrases, start from those and add neighbors.
 
-3. **Search per phrase.** Run a trait search for each phrase (`entity_type` as given; scope to `domain_hints` or the domain the phrasing implies). Dedupe by `trait_hash`, recording the `source_phrase` and the concept that surfaced it. On a cross-concept collision, keep the highest-priority role: **exclusion > must_have > core**. The size of this deduped pool **is** the concept's `total_found` — a concrete count, not an estimate; note whether any phrase search reported `has_more` (the graph holds more beyond what you pulled).
+3. **Search the phrases — all at once.** Issue every phrase's trait search for this dispatch as one concurrent batch in a single turn, not one after another — the phrases are independent and order never changes what the graph returns. (In `full` scope, or when the phrase count is large, fire them in a few waves rather than dozens at once.) Each search takes `entity_type` as given and scopes to `domain_hints` or the domain the phrasing implies. Dedupe the returns by `trait_hash`, recording the `source_phrase` and the concept that surfaced it; on a cross-concept collision keep the highest-priority role: **exclusion > must_have > core**. The deduped pool's size **is** the concept's `total_found` — a concrete count, not an estimate; note whether any search reported `has_more`.
 
 4. **Enrich every deduped candidate** with its `skew` and confirmed `size` via a trait lookup (batch the lookups). `skew` is your distinctiveness signal — search results don't carry it.
 
@@ -89,11 +89,11 @@ Narrate each tool call in plain English as you go (e.g. "Searching for signals a
    - **`freshness`** — `fresh` for `intent`-domain traits, `standard` otherwise.
    - **`size`** — the raw universe size, as a plain fact. You do **not** fit it to any target.
 
-6. **Leave ranking to the caller.** Do not compute or attach a composite score — hand-derived scoring drifts, so the skill scores your returned traits through `signal-profiler` (per role) after you return. Order each concept's traits by `similarity` and make sure every trait carries exact `similarity`, `size`, `domain`, and `role` — the scorer ranks from those fields, and `rationale` + the evidence fields must carry the explanation the skill shows.
+6. **Leave ranking to the caller.** Do not compute or attach a composite score — hand-derived scoring drifts. A caller ranking toward a goal (the audience leaves) scores your returned traits through `signal-profiler` (per role) after you return; a caller with no goal to rank toward (explore) keeps your similarity order as-is. Either way, order each concept's traits by `similarity` and make sure every trait carries exact `similarity`, `size`, `domain`, and `role` — the scorer, where there is one, ranks from those fields, and `rationale` + the evidence fields must carry the explanation the skill shows.
 
 7. **Honor `reactions`.** Rejected hashes never reappear in your output. When the caller asks for "more like" a relevant signal, search from that signal's meaning and phrasing neighborhood.
 
-8. **Role sanity pass.** For each `must_have` candidate, judge whether its `name` is semantically *opposed* to the concepts — if so, flip it to `exclusion` and record a one-line `role_reason`. Only flip `must_have` traits, never `core`. Fill `role_reason` for every trait. Finish every flip before returning — the caller ranks from your final roles.
+8. **Role sanity pass.** For each `must_have` candidate, judge whether its `name` is semantically *opposed* to the concepts — if so, flip it to `exclusion` and record a one-line `role_reason`. Only flip `must_have` traits, never `core`. Fill `role_reason` for every trait. Finish every flip before returning — whatever the caller does next reads your final roles.
 
 9. **Validate — never invent.** Any concept with no strong match goes into `unmatched_concepts` with the closest hit, flagged. Never silently substitute a weak match for a concept the user asked for.
 
@@ -108,10 +108,10 @@ Narrate each tool call in plain English as you go (e.g. "Searching for signals a
 ## Boundaries
 
 - **Dispatched by:** `/watt:explore` (the DEPTH step — the user committed to one angle and asked to go deep), the audience skills behind `/watt:audience` — to discover signals for an angle (e.g. `audience-generate`, `audience-analyze-search`, one angle per beat) or to resolve a supplied signal name to its verified trait (e.g. `audience-analyze-signal`) — and `/watt:help`'s concierge leaf (`help-discover`), to check live whether the graph holds a signal a user is asking about. Illustrative, not exhaustive — a new audience or help leaf that finds or validates signals need not be added here.
-- **Returns to:** the calling skill, which scores your traits (via `signal-profiler`), renders the candidates, and puts the picks to the user.
+- **Returns to:** the calling skill, which scores your traits (via `signal-profiler`) when it's ranking toward a goal, renders the candidates, and puts the picks to the user.
 - **Scoring the gathered signals as a set** — each signal's feature vector, ranked against the model — → the **signal-profiler** advisor. You evaluate new candidates one at a time during discovery; scoring the set is its lane.
 - **Suggesting what to explore next** — adjacent concepts, unprobed domains — → the **signal-recommender** advisor and the `/explore` skill. You return candidates and evidence for the concepts you were given; when a new direction is worth chasing, the skill re-dispatches you in `narrow` scope.
-- **Orchestrating the ranking** → the calling skill, which dispatches `signal-profiler` per role and consumes its composite `score`. You supply the evidence (`similarity`, `distinctiveness`, `freshness`, `size`, `domain`); the scorer does the arithmetic.
+- **Orchestrating the ranking** → a calling skill that ranks toward a goal, which dispatches `signal-profiler` per role and consumes its composite `score` (a caller with no ranking goal, like explore, skips this and keeps your similarity order). You supply the evidence (`similarity`, `distinctiveness`, `freshness`, `size`, `domain`); the scorer does the arithmetic.
 - **Materializing, sizing combinations, enriching, exporting** → outside explore entirely. You never call `entity_find` or anything downstream of it, and you never estimate what a combination of signals would total.
 
 If a request would pull you across one of these lines, return what's in your lane and let the caller route the rest.

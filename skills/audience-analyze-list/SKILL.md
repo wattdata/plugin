@@ -40,7 +40,7 @@ Two input shapes; the only difference is whether resolution is needed.
 
 ### 2 — Run the shared read (discovered-only)
 
-Hand off to the parent's shared read & report (`audience-analyze` → *The read & report*): dispatch **`audience-profiler`** in mode B with the `entity_ids_uri` (the resolved set, or the roster/group URI taken as-is), the `headcount`, and the `workflow_id` — **no signals**, so the read is discovered-only. Render the dashboard with the discovered half (defining traits by lift, segmentation, the intent panel by reach); there is no your-signals section. Offer the shareable report — built with `--no-specified` so it drops Section 1 — and the next step (for a roster, a per-group read is the natural deeper cut, one mode-B dispatch per group). The state file's `last_workflow` is `audience-analyze-list`.
+Hand off to the parent's shared read & report (`audience-analyze` → *The read & report*): dispatch **`audience-profiler`** in mode B with the `entity_ids_uri` (the resolved set, or the roster/group URI taken as-is), the `headcount`, and the `workflow_id` — **no signals**, so the read is discovered-only. Render the dashboard with the discovered half (defining traits by lift, segmentation, the intent panel by reach); there is no your-signals section. Offer the shareable report — built with `--no-specified` so it drops Section 1 — and the next step (for a roster, a per-group read is the natural deeper cut, one mode-B dispatch per group).
 
 ## How to behave
 

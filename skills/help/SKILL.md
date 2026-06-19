@@ -16,7 +16,7 @@ compatibility: Requires the remote Watt MCP server (network access).
 
 - **Called by:** the user (`/watt:help`), or any skill that hits a wall and offers the help door.
 - **Hands off to:** the three leaves —
-  - **`help-guide`** — the capability/how-to answers ("what can I do", "how do I build an audience", "what are signals", "what strategies exist"). Reads the capability index; touches no graph.
+  - **`help-guide`** — the capability/how-to answers ("what can I do", "how do I build an audience", "what are signals", "what strategies exist"), and version/"what's changed" answers ("what's new", "what version am I on", "am I up to date"). Reads the capability index and the shipped changelog; touches no graph.
   - **`help-discover`** — the concierge: a question about whether the graph holds something ("do you have data on X", "is there a signal for Y") → goes and checks live, then answers.
   - **`help-ticket`** — reach the team: draft → confirm → file a bug, signal request, feature request, or human-help, and check or list what's been filed.
 
@@ -33,11 +33,11 @@ The leaves inherit these; they don't restate them.
 - **Point to the docs for depth.** The published docs (load `${CLAUDE_PLUGIN_ROOT}/context/docs.md` through the shell when a docs link is in play — the file tool can't always see the plugin directory, and it's on demand, not always in context) are Watt's long-form companion. When an answer would land better with more detail, offer one page as a plain markdown link — *after* you've answered or checked, never instead of it. Don't hardcode page URLs (the docs change): find the current page by searching the web or crawling from the docs root and link what you actually reach, else fall back to the docs root. Never guess a URL.
 - **Visuals follow what they show.** Render each beat per the render contract. A render of **signals** (the concierge's candidate card) is a signal render in the **Watt palette**, like explore's; a **ticket or guide** render is neither a signal nor an audience render, so it uses the **host's default styling — never the Watt palette** (mark its root `data-non-watt`). The contract owns the rest — and how the closing decision degrades where the host can't render or return a pick.
 - **Narrate, don't dump.** Narrate every tool call and dispatch in plain English; never show a structured payload.
-- **Don't write the plugin state file.** Help is a utility, not a workflow milestone — leave `state.json` untouched.
 
 ## Entry
 
 - **A capability or how-to question** — "what can I do with Watt", "how do I build an audience", "what's a signal", "what strategies are there", "where do I start" → `help-guide`.
+- **A version or "what's changed" question** — "what's new", "what changed in this version", "what version am I on", "am I up to date" → `help-guide`, which answers from the shipped changelog (and the session-start update notice if one's in context).
 - **A connection or setup question** — "how do I connect Watt", "Watt isn't connected", "the connector's grayed out", "do I need to install something" → `help-guide`, which explains the connect path and points to `/watt:quickstart` to be walked through it. (A not-connected state is a setup gap to resolve, not a bug to file.)
 - **A question about whether the graph holds something** — "do you have data on X", "is there a signal for Y", "can Watt reach Z" → `help-discover`, which goes and checks.
 - **A problem, a request, or a human ask** — "something's broken / it's returning wrong data", "you should have a signal for X", "I wish Watt could…", "let me talk to a person" → `help-ticket` (it drafts; it files only on confirm).

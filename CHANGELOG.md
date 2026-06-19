@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.11.0] - 2026-06-19
+
+### New
+- Watt now tells you at the start of a session when a newer version is available, so you know when to update.
+- Ask Watt what's new — `/watt:help` now tells you what's changed in your version and whether you're on the latest.
+
+### Improved
+- `/watt:quickstart` now spells out connection setup step by step — installing and authorizing the Signal Graph connector, and the exact capability settings (network access and the domain allowlist) that let your audience exports download.
+- `/watt:explore` stays focused on discovery: it keeps your working folder clean and carries the signals you keep straight into `/watt:audience` when you're ready to build an audience.
+- Going deep on an angle in `/watt:explore` returns faster, and the wait now shows clear progress while Watt sweeps the graph for signals.
+- When you ask `/watt:explore` how your kept signals stack up, it now shows the read as a visual with the scoring laid out per signal — so you can see at a glance which are tightest, freshest, and most distinctive.
+
 ## [0.10.0] - 2026-06-19
 
 ### Improved

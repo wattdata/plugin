@@ -37,7 +37,7 @@ Build the expression from the `role` column — `defining` any-of, `must-have` a
 
 ### 2 — Run the shared read
 
-Hand off to the parent's shared read & report (`audience-analyze` → *The read & report*) in **mode A** — the signal stack you took in hand (expression, signals, location, reach, `workflow_id`). The router owns the dispatch, the two-section dashboard, the report, and the next-step options. The state file's `last_workflow` is `audience-analyze-signal`.
+Hand off to the parent's shared read & report (`audience-analyze` → *The read & report*) in **mode A** — the signal stack you took in hand (expression, signals, location, reach, `workflow_id`). The router owns the dispatch, the two-section dashboard, the report, and the next-step options.
 
 ## How to behave
 

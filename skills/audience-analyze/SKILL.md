@@ -104,21 +104,6 @@ It writes a self-contained HTML report (no JavaScript, no CDN — opens offline,
 
 **A custom report, on request.** When the user wants something the standard report doesn't give — a different cut, extra or fewer stats, their own framing or layout — author a bespoke one on the fly: a self-contained HTML file (no JavaScript, no CDN, opens offline) crafted for the ask, written to the working directory. Two rules keep it honest: **every figure traces to the profiler's aggregates** — the `specified`/`coverage`/`discovered`/`breakdown` you already hold, or a fresh `audience-profiler` dispatch for a cut it didn't cover, never a number you invented — and it stays **aggregates-only — no row, no PII**, like the standard one. The script is the consistent default; this is the escape hatch when the user asks for more.
 
-Then record the run (silent plumbing — don't mention it), with `last_workflow` set to the leaf that ran:
-
-```bash
-STATE_DIR="${CLAUDE_PLUGIN_DATA:-${HOME}/.claude/plugins/data/watt}"
-mkdir -p "$STATE_DIR"
-cat > "$STATE_DIR/state.json" <<EOF
-{
-  "version": 1,
-  "first_run_complete": true,
-  "completed_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-  "last_workflow": "audience-analyze-<search|signal|list>"
-}
-EOF
-```
-
 ## How to behave
 
 - **One question, then route.** If the way in is clear from the ask, route without the question. Never start the work here — no trait searches, no dispatch, no render; a router that "helps a little first" becomes a second copy of the leaf.

@@ -88,20 +88,7 @@ Render the return:
 - **The verification line** — the activator's shape-check conclusion (each output file's header matches the platform's spec, with identifier fields digested where the spec hashes them and plaintext where it doesn't).
 - **The handles** — `workflow_id` (the same export, reproducible) and the raw page URLs (1-hour traceability; they carry the unhashed identifier values if the user needs those — the platform file is the deliverable).
 
-Offer the natural next steps in one line: another run for a different slice, an `audience-analyze` read if they haven't had one, or done. Then record the run (silent plumbing — don't mention it):
-
-```bash
-STATE_DIR="${CLAUDE_PLUGIN_DATA:-${HOME}/.claude/plugins/data/watt}"
-mkdir -p "$STATE_DIR"
-cat > "$STATE_DIR/state.json" <<EOF
-{
-  "version": 1,
-  "first_run_complete": true,
-  "completed_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-  "last_workflow": "audience-activate"
-}
-EOF
-```
+Offer the natural next steps in one line: another run for a different slice, an `audience-analyze` read if they haven't had one, or done.
 
 ## Expected audience size: the posture we hold
 
