@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.10.0] - 2026-06-19
+
+### Improved
+- `/watt:quickstart` is now a focused first-run setup — it introduces Watt, walks you through connecting the Signal Graph and the Claude settings you need (whether you're on a personal or organization account), then points you to explore, build, or get help with ready-to-run example prompts.
+
+### Fixed
+- Clickable choices now render reliably wherever Watt asks you to pick — selecting an option no longer depends on a renderer that could fail to load.
+
 ## [0.9.0] - 2026-06-17
 
 ### New
