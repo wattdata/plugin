@@ -6,8 +6,14 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.py\"",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/session-start-context.sh\"",
             "statusMessage": "Preparing your Watt session…"
+          },
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/session-start-updates.sh\"",
+            "asyncRewake": true,
+            "statusMessage": "Watt: checking for updates…"
           }
         ]
       }

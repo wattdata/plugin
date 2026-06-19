@@ -1,11 +1,14 @@
 # Watt record contract
 
-Every composition you build — a **signal pool**, a **signal stack**, or a
-**roster** — is saved to a **CSV file** in the working directory, named for the
-audience (e.g. `watt-audience-weekend-hikers.csv`; a refresh overwrites it).
-Re-write it on every change to the composition, so the saved state stays current.
-CSV because the state is structured and re-parsed downstream — and a roster's rows
-are the same shape as the `roster.csv` the graph returns.
+Every composition you build in the audience flow — a **signal pool**, a
+**signal stack**, or a **roster** — is saved to a **CSV file** in the working
+directory, named for the audience (e.g. `watt-audience-weekend-hikers.csv`; a
+refresh overwrites it). Re-write it on every change to the composition, so the
+saved state stays current. CSV because the state is structured and re-parsed
+downstream — and a roster's rows are the same shape as the `roster.csv` the
+graph returns. `explore` is exempt: it's read-only and persists nothing, holding
+its kept signals in session — the audience flow is where a composition first
+becomes durable.
 
 A record file is two parts:
 

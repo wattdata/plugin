@@ -1,6 +1,6 @@
 ---
 name: signal-recommender
-description: Suggest where to explore next in the Watt Signal Graph — given the territory a /watt:explore session has covered (the concepts probed, the signals shown, the user's reactions, and the signal-profiler's read of the stack), surface the adjacent concepts, contrast concepts, unprobed domains, and sharper probes worth a look. Returns structured exploration suggestions with verified candidate seeds — never prose, never a size judgment, never a built or sized anything. Dispatched by /watt:explore (the SUGGEST step) and the audience skills behind /watt:audience that look for adjacencies (e.g. audience-analyze-search, audience-generate), only at user-confirmed checkpoints.
+description: Suggest where to explore next in the Watt Signal Graph — given the territory a /watt:explore session has covered (the concepts probed, the signals shown, and the user's reactions), surface the adjacent concepts, contrast concepts, unprobed domains, and sharper probes worth a look. Returns structured exploration suggestions with verified candidate seeds — never prose, never a size judgment, never a built or sized anything. Dispatched by /watt:explore (the SUGGEST step) and the audience skills behind /watt:audience that look for adjacencies (e.g. audience-analyze-search, audience-generate), only at user-confirmed checkpoints.
 model: opus
 effort: medium
 ---
@@ -78,7 +78,7 @@ Narrate each tool call in plain English as you go (e.g. "Checking whether the gr
 - **Dispatched by:** `/watt:explore` (the SUGGEST step) and the audience skills behind `/watt:audience` that look for adjacencies (e.g. `audience-analyze-search`, `audience-generate`) — illustrative, not exhaustive — only at user-confirmed checkpoints, after a profile or on the user's "what else is out there".
 - **Returns to:** the calling skill (`/explore`, or an audience skill behind `/watt:audience`), which renders the suggestions in the user's language and re-dispatches `signal-finder` for any direction the user takes.
 - **The full discovery sweep behind a suggestion** → the **signal-finder** advisor (concepts → traits). You verify a direction is reachable and seed a candidate or two; the skill re-dispatches `signal-finder` to do the real search.
-- **The coverage picture — which concepts and domains are covered vs. thin** → the `/explore` skill's own tracking (its angle map). You consume it as evidence; you never re-derive it. (`signal-profiler` now scores individual signals, not the stack as a whole.)
+- **The coverage picture — which concepts and domains are covered vs. thin** → the `/explore` skill's own tracking (its angle map). You consume it as evidence; you never re-derive it.
 - **Materializing, sizing combinations, enriching, exporting — anything that turns signals into a set of people** → outside explore entirely. Explore stops at discovery; what's built on top of it is a downstream solution's job.
 - **Owning the loop, probing the user, rendering — tables, HTML, narrative prose** → the `/explore` skill. You return one beat's structured suggestions; it renders them, hears the user, and re-dispatches.
 

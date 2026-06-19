@@ -13,7 +13,7 @@ This is the user's first few minutes with Watt. The skill gets them up and runni
 
 ## Works with
 
-- **Called by:** the user (`/watt:quickstart`) — usually off the SessionStart first-run greeting.
+- **Called by:** the user (`/watt:quickstart`).
 - **Hands off to:** `/watt:audience`, `/watt:explore`, and `/watt:help` — via the Interactive-input choices that close the run (and `/watt:help` earlier, if they get stuck connecting).
 
 ## The flow
@@ -32,15 +32,25 @@ Keep it to a few lines, and make no tool calls yet — the work starts in step 2
 
 Two steps every time: **(1)** install and connect the Signal Graph connector, **(2)** turn on the Claude settings that make Watt work. What varies is whether they're on a **personal** account or a **Claude organization** (team/enterprise) — orgs keep these settings org-wide, so changing them needs the **Owner** role.
 
-Hand the user clean, clickable links — never explain URL schemes or how the link works; that's plumbing they don't need.
+Assume the person doing this isn't technical and isn't a Claude expert — they're likely a marketer, not a developer. Favor clarity over brevity here: name exactly what to click in plain words, one move at a time, and don't assume they know their way around Claude's settings or an admin console. Hand them clean, clickable links — never explain URL schemes or how the link works; that's plumbing they don't need.
 
 **Step 1 — the connector.** Send them to Watt's connector page — https://claude.ai/customize/plugins/watt%40plugin/connectors — and have them check the **Install** button:
-- **Clickable** → click **Install**, then **Connect** to authorize. Done. (Personal accounts, or an org where Watt's already approved.)
+- **Clickable** → walk them through it, one move at a time:
+  1. Click **Install** to set up the bundled Signal Graph connector.
+  2. A connector dialog appears already filled in — click **Add**.
+  3. On the connector's entry, click **Connect** to start the login.
+  4. Log in with your Watt business email to authorize.
+
+  That's the whole connector. (Personal accounts, or an org where Watt's already approved.)
 - **Grayed out** → their organization hasn't approved Watt yet, which takes an Owner. Send this link to whoever owns the org — or follow it yourself if that's you — and pause until it's approved: https://wattdata.ai/docs/integrate/claude
 
-**Step 2 — the settings.**
-- **Personal account** → allow file downloads so audiences can be saved and exported: https://claude.ai/settings/capabilities. Cowork is already on, so they're set.
-- **Organization account** → these are org-wide and need the **Owner** role: allow file downloads (https://claude.ai/admin-settings/capabilities) and enable Cowork (https://claude.ai/admin-settings/cowork). If they're the Owner, they set both; if not, send the admin the link from step 1.
+**Step 2 — the settings.** Watt's exports come back as download links from a cloud-storage domain, so Claude needs permission to reach it — that's what these settings unlock.
+- **Personal account** → open **Settings → Capabilities** (https://claude.ai/settings/capabilities) and set two things so audiences can be saved and exported:
+  1. Turn on **Allow network egress**, so Claude can reach cloud storage.
+  2. In the domain allowlist, choose **All domains** — Watt's export links come from a cloud-storage domain, and anything narrower can block the download.
+
+  Cowork is already on, so once those two are set they're done.
+- **Organization account** → the same two capability settings plus Cowork, but org-wide and gated on the **Owner** role: under **Capabilities** (https://claude.ai/admin-settings/capabilities), turn on **Allow network egress** and set the domain allowlist to **All domains**, then enable Cowork (https://claude.ai/admin-settings/cowork). If they're the Owner, they set all of it; if not, send the admin the link from step 1.
 
 **End the beat with a tappable confirmation, not an open-ended wait.** Offer **"I'm connected"** and **"I'm stuck"** as Interactive inputs (per the render contract — choices use Claude's native clickable options, not the visualize renderer); a typed reply always wins. You can't detect the connection yourself, and probing one mid-setup just fails and tempts a retry loop — so go on their pick. On **"I'm connected"**, run a single `trait_search` (e.g. "home"), narrated in a warm line, as a quick liveness check, then move to step 3. On **"I'm stuck"** — or if it just won't connect — don't push it; point them to `/watt:help`.
 

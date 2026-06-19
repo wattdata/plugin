@@ -66,7 +66,7 @@ Narrate each tool call in plain English ("Refreshing skew and size for 14 signal
 
 ## Boundaries
 
-- **Dispatched by:** `/watt:explore` (the DESCRIBE step) and the audience skills behind `/watt:audience` that score a discovered pool before acting on it (e.g. `audience-analyze-search`, `audience-generate`) — illustrative, not exhaustive; a new audience leaf that scores a pool need not be added here. A skill that needs raw scoring without the agent can run `scripts/signal_profile.py` **directly** — the script is the shared primitive.
+- **Dispatched by:** `/watt:explore` (the READ step) and the audience skills behind `/watt:audience` that score a discovered pool before acting on it (e.g. `audience-analyze-search`, `audience-generate`) — illustrative, not exhaustive; a new audience leaf that scores a pool need not be added here. A skill that needs raw scoring without the agent can run `scripts/signal_profile.py` **directly** — the script is the shared primitive.
 - **Returns to:** the calling skill, which renders the profile and owns every user turn. You own none.
 - **Finding and validating new signals** → the **signal-finder** advisor; **suggesting where to explore next** → the **signal-recommender** advisor. You profile a list that already exists.
 - **The scoring math** → [`scripts/signal_profile.py`](../scripts/signal_profile.py); **field meanings + defaults** → [`context/signal-metrics.md`](../context/signal-metrics.md). You run and read; you never reimplement either.

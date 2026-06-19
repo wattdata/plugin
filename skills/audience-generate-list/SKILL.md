@@ -144,20 +144,7 @@ The `roster_uri` carries the full entity-ID set (IDs only — never contact data
 
 ### 6 — Hand off
 
-Offer the downstream in one line, in plain words: **export the matched set** (`audience-activate` — Meta, Google, or Reddit) or **read who they are** (`audience-analyze`). Either runs on their say-so. For an expanded roster, the export is where the wide set pays off — each entity is enriched back out to all its identifier types so the platform can reach more of them on its side (the activator's lane, behind its confirmation). Then record the run (silent plumbing — don't mention it), with `last_workflow` set to `audience-generate-list`:
-
-```bash
-STATE_DIR="${CLAUDE_PLUGIN_DATA:-${HOME}/.claude/plugins/data/watt}"
-mkdir -p "$STATE_DIR"
-cat > "$STATE_DIR/state.json" <<EOF
-{
-  "version": 1,
-  "first_run_complete": true,
-  "completed_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-  "last_workflow": "audience-generate-list"
-}
-EOF
-```
+Offer the downstream in one line, in plain words: **export the matched set** (`audience-activate` — Meta, Google, or Reddit) or **read who they are** (`audience-analyze`). Either runs on their say-so. For an expanded roster, the export is where the wide set pays off — each entity is enriched back out to all its identifier types so the platform can reach more of them on its side (the activator's lane, behind its confirmation).
 
 ### L1 — Resolve the seed (lookalike)
 
@@ -184,7 +171,7 @@ intent,<intent name>,31% of seed,~1.2M,fresh,intent,…
 
 ### L3 — Hand off the pool (lookalike)
 
-The tuned signal pool is the deliverable; lookalike builds no audience itself. Offer the next move in one line: **compose it into an audience** — carry the pool into `audience-generate-search` with the working set pre-seeded (discovery skipped for what's already there; that leaf settles the roles with the user and re-scores the pool per role before any compose — the pool's lift-or-reach figures are profiling metrics, never compose scores) — or **read it** via `audience-analyze`. Lookalike does **not** suppress the seed from a later compose: a composed lookalike audience may re-include people already on the seed — out of scope here; say so if asked, don't fake an exclusion. Then record the run exactly as step 6 does (`last_workflow` = `audience-generate-list`).
+The tuned signal pool is the deliverable; lookalike builds no audience itself. Offer the next move in one line: **compose it into an audience** — carry the pool into `audience-generate-search` with the working set pre-seeded (discovery skipped for what's already there; that leaf settles the roles with the user and re-scores the pool per role before any compose — the pool's lift-or-reach figures are profiling metrics, never compose scores) — or **read it** via `audience-analyze`. Lookalike does **not** suppress the seed from a later compose: a composed lookalike audience may re-include people already on the seed — out of scope here; say so if asked, don't fake an exclusion.
 
 ### O1 — Resolve the list (overlay)
 
@@ -221,7 +208,7 @@ e_8890,4,4,2
 …    (sample; full set behind roster_uri)
 ```
 
-Then offer the downstream in one line — **export the top of the list** (`audience-activate` — top-N by rank) or **read who the high scorers are** (`audience-analyze`) — and record the run exactly as step 6 does (`last_workflow` = `audience-generate-list`).
+Then offer the downstream in one line — **export the top of the list** (`audience-activate` — top-N by rank) or **read who the high scorers are** (`audience-analyze`).
 
 ## How to behave
 

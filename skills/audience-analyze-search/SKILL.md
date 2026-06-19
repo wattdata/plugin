@@ -55,7 +55,7 @@ Render the profiled pool per the render contract, grouped by role (defining / mu
 
 When the operator locks the picks, build the expression — defining *any-of*, must-haves *all-of*, exclusions *none-of* — generate one `workflow_id`, and measure the headcount once with a count-only entity find (`format: "none"`, the radius location applied if set). Report it plainly ("**240,000 people** in this market") — never tune the picks toward a number.
 
-Then hand off to the parent's shared read & report (`audience-analyze` → *The read & report*) in **mode A** — the signal stack you just built and measured (expression, signals, location, headcount, `workflow_id`). The router owns the dispatch, the two-section dashboard, and the report. The state file's `last_workflow` is `audience-analyze-search`.
+Then hand off to the parent's shared read & report (`audience-analyze` → *The read & report*) in **mode A** — the signal stack you just built and measured (expression, signals, location, headcount, `workflow_id`). The router owns the dispatch, the two-section dashboard, and the report.
 
 ## How to behave
 
