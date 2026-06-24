@@ -10,8 +10,11 @@ module's header for why the line falls where it does.
 
 Audience-size-critical, so keep the hashing and column layout stable: Meta SHA-256
 hashes every field except the mobile-ad ID (sent raw), and wants phone digits
-only (no leading ``+``). Deterministic — the same input always produces the
-same output.
+only (no leading ``+``). Country and zip are among the hashed fields — Meta
+matches them in hashed form, so they ride as digests, not plaintext; the mobile-ad
+ID is the lone raw match key (hashing it costs the device match). These ten
+columns in this hash/raw split are exactly Meta's Customer Match spec — the
+intended shape, deterministic: the same input always produces the same output.
 
 Requires ``_common.py`` beside it in ``scripts/writers/``.
 """
@@ -25,6 +28,7 @@ from _common import (
     split_name,
     any_email,
     any_phone,
+    any_maid,
     read_watt_csv,
     _csv_field,
 )
@@ -50,8 +54,9 @@ def phone_strip_plus(p):
 
 
 def has_required(row):
-    """True if the row has an identifier Meta can match on (email or phone)."""
-    return any_email(row) or any_phone(row)
+    """True if the row has an identifier Meta can match — email, phone, or a
+    mobile-ad ID (Meta matches a MADID-only record)."""
+    return any_email(row) or any_phone(row) or any_maid(row)
 
 
 def write_csv(path, headers, rows):
@@ -67,13 +72,18 @@ def write_meta(rows, out_dir):
     """Write ``meta_audience.csv``.
 
     PII columns are SHA-256-hashed; ``madid`` rides raw (Meta's one unhashed
-    match key). Each person explodes into one row per email/phone pair, and a
-    row with neither is dropped (Meta requires at least one identifier per row).
+    match key). Each person explodes into one row per email/phone pair; a person
+    with a mobile-ad ID but no email or phone rides as a single madid-only row
+    (Meta matches that). A person with none of the three is skipped, so the write
+    path can never emit an all-empty row (Meta requires at least one identifier
+    per row).
     """
     path = os.path.join(out_dir, "meta_audience.csv")
     headers = ["email", "phone", "fn", "ln", "country", "zip", "ct", "st", "external_id", "madid"]
     out = []
     for r in rows:
+        if not has_required(r):
+            continue
         fn, ln = split_name(r.get("name1") or "")
         addr = parse_address(r.get("address1") or "")
         base = {
@@ -92,30 +102,32 @@ def write_meta(rows, out_dir):
                 emails.append(sha256_hex(email_lower_trim(r[f"email{i}"])))
             if r.get(f"phone{i}"):
                 phones.append(sha256_hex(phone_strip_plus(r[f"phone{i}"])))
+        madid = base["madid"]
         for i in range(max(len(emails), len(phones), 1)):
             row_out = dict(base)
             row_out["email"] = emails[i] if i < len(emails) else ""
             row_out["phone"] = phones[i] if i < len(phones) else ""
-            if not row_out["email"] and not row_out["phone"]:
+            if not row_out["email"] and not row_out["phone"] and not madid:
                 continue
             out.append(row_out)
     write_csv(path, headers, out)
 
 
 USAGE = """usage: meta.py [--help] [--list-identifiers]
-               [--input CSV --out-dir DIR] [--prune-missing]
+               [--input CSV --out-dir DIR]
 
   --list-identifiers  Print the entity_find domains this writer needs and exit.
   --input CSV         Materialized audience CSV (Watt v2 entity_find schema).
   --out-dir DIR       Output directory for the platform file(s).
-  --prune-missing     Drop persons with no usable identifier before writing.
-                      Default: pass them through.
+
+  A person with no identifier Meta can match produces no row. The reported
+  count is the people actually written.
 
   Exit codes: 0 success · 2 bad arguments."""
 
 
 def main(argv):
-    args = {"list_identifiers": False, "input": "", "out_dir": "", "prune_missing": False}
+    args = {"list_identifiers": False, "input": "", "out_dir": ""}
     i = 0
     while i < len(argv):
         a = argv[i]
@@ -130,8 +142,6 @@ def main(argv):
         elif a == "--out-dir":
             i += 1
             args["out_dir"] = argv[i] if i < len(argv) else ""
-        elif a == "--prune-missing":
-            args["prune_missing"] = True
         else:
             print(f"Unknown argument: {a}\n{USAGE}", file=sys.stderr)
             return 2
@@ -147,18 +157,11 @@ def main(argv):
 
     os.makedirs(args["out_dir"], exist_ok=True)
     rows = read_watt_csv(args["input"])
-    total_in = len(rows)
-
-    if args["prune_missing"]:
-        rows = [r for r in rows if has_required(r)]
-        print(f"Prune: dropped {total_in - len(rows)} of {total_in} persons missing required identifiers for platform 'meta'.")
-    else:
-        missing = sum(1 for r in rows if not has_required(r))
-        if missing:
-            print(f"NOTE: {missing} of {total_in} persons have no required identifier for platform 'meta' (not pruned; pass --prune-missing to drop them).")
-
+    written = sum(1 for r in rows if has_required(r))
     write_meta(rows, args["out_dir"])
-    print(f"OK: wrote meta output to {args['out_dir']} (persons in: {len(rows)})")
+    skipped = len(rows) - written
+    note = f"; {skipped} skipped with no identifier Meta can match" if skipped else ""
+    print(f"OK: wrote {written} of {len(rows)} persons to {args['out_dir']}{note}")
     return 0
 
 

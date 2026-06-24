@@ -48,10 +48,22 @@ def phone_keep_plus(p):
     return p if p else ""
 
 
+def has_contact(row):
+    """True if Google can match the row through the contact file — an email, a
+    phone, or a mailing address (name + ZIP; country is the constant US). A
+    device ID does NOT count here: Google requires device IDs in their own file,
+    never mixed with contact data, so a device-ID-only person earns no contact row."""
+    if any_email(row) or any_phone(row):
+        return True
+    fn, ln = split_name(row.get("name1") or "")
+    zip5 = parse_address(row.get("address1") or "")["zip5"]
+    return bool((fn or ln) and zip5)
+
+
 def has_required(row):
-    """True if Google can match the row. Maid counts — Google has a separate
-    device-ID match path, so a maid-only person is still reachable."""
-    return any_email(row) or any_phone(row) or any_maid(row)
+    """True if Google can reach the row by any path — the contact file or the
+    separate device-ID file. Their union is the reachable-person count."""
+    return has_contact(row) or any_maid(row)
 
 
 def write_rows(path, header_row, rows):
@@ -70,14 +82,17 @@ def write_google(rows, out_dir):
 
     Email/phone/first/last are SHA-256-hashed; country and zip ride plaintext.
     Mobile device IDs go to a separate one-column file, unhashed (Google's
-    device list cannot mix with other identifiers).
+    device list cannot mix with other identifiers). A person earns a contact-file
+    row only when they carry a contact identifier (email, phone, or name+ZIP); a
+    device-ID-only person appears only in the device-ID file. So the contact file
+    can never carry a row with no contact identifier.
     """
-    rows = list(rows)
+    contact_rows = [r for r in rows if has_contact(r)]
 
     path = os.path.join(out_dir, "google_audience.csv")
     header = (["Email"] * MAX_PER_TYPE) + (["Phone"] * MAX_PER_TYPE) + ["First Name", "Last Name", "Country", "Zip"]
     out = []
-    for r in rows:
+    for r in contact_rows:
         fn, ln = split_name(r.get("name1") or "")
         addr = parse_address(r.get("address1") or "")
         cells = []
@@ -101,19 +116,20 @@ def write_google(rows, out_dir):
 
 
 USAGE = """usage: google.py [--help] [--list-identifiers]
-                 [--input CSV --out-dir DIR] [--prune-missing]
+                 [--input CSV --out-dir DIR]
 
   --list-identifiers  Print the entity_find domains this writer needs and exit.
   --input CSV         Materialized audience CSV (Watt v2 entity_find schema).
   --out-dir DIR       Output directory for the platform file(s).
-  --prune-missing     Drop persons with no usable identifier before writing.
-                      Default: pass them through.
+
+  A person with no identifier Google can match produces no row. The reported
+  count is the people actually written.
 
   Exit codes: 0 success · 2 bad arguments."""
 
 
 def main(argv):
-    args = {"list_identifiers": False, "input": "", "out_dir": "", "prune_missing": False}
+    args = {"list_identifiers": False, "input": "", "out_dir": ""}
     i = 0
     while i < len(argv):
         a = argv[i]
@@ -128,8 +144,6 @@ def main(argv):
         elif a == "--out-dir":
             i += 1
             args["out_dir"] = argv[i] if i < len(argv) else ""
-        elif a == "--prune-missing":
-            args["prune_missing"] = True
         else:
             print(f"Unknown argument: {a}\n{USAGE}", file=sys.stderr)
             return 2
@@ -145,18 +159,11 @@ def main(argv):
 
     os.makedirs(args["out_dir"], exist_ok=True)
     rows = read_watt_csv(args["input"])
-    total_in = len(rows)
-
-    if args["prune_missing"]:
-        rows = [r for r in rows if has_required(r)]
-        print(f"Prune: dropped {total_in - len(rows)} of {total_in} persons missing required identifiers for platform 'google'.")
-    else:
-        missing = sum(1 for r in rows if not has_required(r))
-        if missing:
-            print(f"NOTE: {missing} of {total_in} persons have no required identifier for platform 'google' (not pruned; pass --prune-missing to drop them).")
-
+    written = sum(1 for r in rows if has_required(r))
     write_google(rows, args["out_dir"])
-    print(f"OK: wrote google output to {args['out_dir']} (persons in: {len(rows)})")
+    skipped = len(rows) - written
+    note = f"; {skipped} skipped with no identifier Google can match" if skipped else ""
+    print(f"OK: wrote {written} of {len(rows)} persons to {args['out_dir']}{note}")
     return 0
 
 
