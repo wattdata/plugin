@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.14.1] - 2026-06-24
+
+### Fixed
+- Audience exports now report the true number of people written to the file, and every export — Meta, Google, and Reddit — leaves out people with no identifier the platform can match, so the file carries only reachable rows and the count you see matches what's in it.
+
 ## [0.14.0] - 2026-06-24
 
 ### Improved

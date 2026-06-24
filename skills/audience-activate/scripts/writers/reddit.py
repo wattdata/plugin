@@ -75,9 +75,11 @@ def write_reddit(rows, out_dir):
 
     Emails explode one row per email per person, SHA-256-hashed into the hashed
     column; the unhashed-email column stays empty. The device ID rides raw in
-    its own column — the top-quality device ID per person.
+    its own column — the top-quality device ID per person. A person with no
+    identifier Reddit can match is skipped, so the write path can never emit an
+    all-empty row.
     """
-    rows = list(rows)
+    rows = [r for r in rows if has_required(r)]
     out = []
     for r in rows:
         for i in range(1, MAX_PER_TYPE + 1):
@@ -91,19 +93,20 @@ def write_reddit(rows, out_dir):
 
 
 USAGE = """usage: reddit.py [--help] [--list-identifiers]
-                 [--input CSV --out-dir DIR] [--prune-missing]
+                 [--input CSV --out-dir DIR]
 
   --list-identifiers  Print the entity_find domains this writer needs and exit.
   --input CSV         Materialized audience CSV (Watt v2 entity_find schema).
   --out-dir DIR       Output directory for the platform file(s).
-  --prune-missing     Drop persons with no usable identifier before writing.
-                      Default: pass them through.
+
+  A person with no identifier Reddit can match produces no row. The reported
+  count is the people actually written.
 
   Exit codes: 0 success · 2 bad arguments."""
 
 
 def main(argv):
-    args = {"list_identifiers": False, "input": "", "out_dir": "", "prune_missing": False}
+    args = {"list_identifiers": False, "input": "", "out_dir": ""}
     i = 0
     while i < len(argv):
         a = argv[i]
@@ -118,8 +121,6 @@ def main(argv):
         elif a == "--out-dir":
             i += 1
             args["out_dir"] = argv[i] if i < len(argv) else ""
-        elif a == "--prune-missing":
-            args["prune_missing"] = True
         else:
             print(f"Unknown argument: {a}\n{USAGE}", file=sys.stderr)
             return 2
@@ -135,18 +136,11 @@ def main(argv):
 
     os.makedirs(args["out_dir"], exist_ok=True)
     rows = read_watt_csv(args["input"])
-    total_in = len(rows)
-
-    if args["prune_missing"]:
-        rows = [r for r in rows if has_required(r)]
-        print(f"Prune: dropped {total_in - len(rows)} of {total_in} persons missing required identifiers for platform 'reddit'.")
-    else:
-        missing = sum(1 for r in rows if not has_required(r))
-        if missing:
-            print(f"NOTE: {missing} of {total_in} persons have no required identifier for platform 'reddit' (not pruned; pass --prune-missing to drop them).")
-
+    written = sum(1 for r in rows if has_required(r))
     write_reddit(rows, args["out_dir"])
-    print(f"OK: wrote reddit output to {args['out_dir']} (persons in: {len(rows)})")
+    skipped = len(rows) - written
+    note = f"; {skipped} skipped with no identifier Reddit can match" if skipped else ""
+    print(f"OK: wrote {written} of {len(rows)} persons to {args['out_dir']}{note}")
     return 0
 
 
