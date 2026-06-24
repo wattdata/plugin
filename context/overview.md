@@ -81,9 +81,10 @@ behind it is the record contract (`context/record.md`).
 
 ## Getting connected
 
-Watt runs on its Signal Graph connector. `/watt:quickstart` confirms it on its first
-beat and walks a new user through enabling it — including the admin route when a team
-or org plan has it locked; `/watt:help` explains it too. **A connection or
+Watt runs on its Signal Graph connector. `/watt:configure` verifies it and walks the
+user through connecting it — including the admin route when a team or org plan has it
+locked — and is the place to return to any time something stops connecting; `/watt:help`
+explains it too. **A connection or
 authentication failure is never a transient to retry and never yours to engineer
-around** — stop, and send the user to `/watt:quickstart` to get the connection fixed
+around** — stop, and send the user to `/watt:configure` to get the connection fixed
 before going any further.

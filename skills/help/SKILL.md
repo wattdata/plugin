@@ -1,6 +1,6 @@
 ---
 name: help
-description: Get unstuck with Watt without leaving Claude — ask what you can do and how, figure out why something isn't working, see what's changed and whether you're on the latest, or tell the team something — report a bug, request a signal or feature, reach a human, and track what you've filed. It answers your question first and gets you to a result fast — pointing you to /watt:explore, /watt:audience, or /watt:quickstart when that's the quicker path. Use when you type /watt:help, or say "what can Watt do", "how do I build an audience", "why is X failing", "Claude is blocking my export", "something's broken", "I need a signal for Y", "I need a human", "what's new", or "what have I filed".
+description: Get unstuck with Watt without leaving Claude — ask what you can do and how, figure out why something isn't working, see what's changed and whether you're on the latest, or tell the team something — report a bug, request a signal or feature, reach a human, and track what you've filed. It answers your question first and gets you to a result fast — pointing you to /watt:explore, /watt:audience, or /watt:configure when that's the quicker path. Use when you type /watt:help, or say "what can Watt do", "how do I build an audience", "why is X failing", "Claude is blocking my export", "something's broken", "I need a signal for Y", "I need a human", "what's new", or "what have I filed".
 ---
 
 # Help
@@ -16,7 +16,7 @@ This skill stands alone — it answers from what's in this file and the **live d
 ## Works with
 
 - **Called by:** the user (`/watt:help`), or any skill that hits a wall and offers the help door.
-- **Hands off to:** `/watt:explore` — a question about what data or signals the graph holds (help points there; it never probes the graph itself); `/watt:audience` — build, profile, read, or export the actual people; `/watt:quickstart` — connect Watt or first-run setup. The user types the command when ready; nothing auto-runs.
+- **Hands off to:** `/watt:explore` — a question about what data or signals the graph holds (help points there; it never probes the graph itself); `/watt:audience` — build, profile, read, or export the actual people; `/watt:configure` — connect Watt or first-run setup. The user types the command when ready; nothing auto-runs.
 
 ## Language
 
@@ -35,7 +35,7 @@ Checking or listing what's already filed is a **read**, not a filing.
 
 - **Bare `/watt:help`, or any "help" whose lane isn't clear** → say briefly what help can do and offer the common actions as the turn's one decision (flow step 1). Don't guess a lane.
 - **A capability, how-to, or how-does-X-work question** — "what can Watt do", "how do I build an audience", "what's a signal", "how does explore work", "where do I start" → answer it (step 2).
-- **A redirect — the ask belongs to another command** — what data exists ("do you have data on X", "is there a signal for Y") → `/watt:explore`; build / size / export ("build me an audience", "export to Meta") → `/watt:audience`; connect or setup ("how do I connect", "the connector's grayed out") → `/watt:quickstart`. Name the command; help never probes the graph itself.
+- **A redirect — the ask belongs to another command** — what data exists ("do you have data on X", "is there a signal for Y") → `/watt:explore`; build / size / export ("build me an audience", "export to Meta") → `/watt:audience`; connect or setup ("how do I connect", "the connector's grayed out") → `/watt:configure`. Name the command; help never probes the graph itself.
 - **Troubleshooting intent — something's not working and they want it fixed** — "why is my export failing", "Claude is blocking my export", "my audience came back tiny" → diagnose and resolve (step 3), which falls back to filing a bug if it can't be resolved.
 - **Filing intent — a bug they want reported, a signal or feature request, or a human ask** — "this is a bug, log it", "you should have a signal for X", "I wish Watt could…", "let me talk to a person" → triage and file (step 5).
 - **A version or "what's changed" ask** — "what's new", "what changed", "what version am I on", "am I up to date" → step 4.
@@ -70,7 +70,7 @@ Answer directly and concretely, in the user's terms. Your sources, in order: **w
 /watt:audience  the people: build an audience (to a size, the widest reach, or the
                 highest-intent few), profile a market, read who an audience reaches,
                 or export it as a platform file. Or start from a list you own.
-/watt:quickstart  connect Watt and get set up.
+/watt:configure  connect Watt and get set up.
 Limits:  US only · person audiences, adults only (ideas about minors pivot to
          parents/guardians of that age).
 Export:  to any destination — bring your own file shape, use a pre-built shape
@@ -81,17 +81,17 @@ For depth, reach the **live docs**: fetch the index at `https://wattdata.ai/llms
 
 **Watt's plugin is open source** — when it helps a *how does X work* answer, read its own files (`context/`, `skills/`, `agents/`) to ground it; they're the best source for **how an audience was built**. Translate what you find into plain language — the user hears how it works, never the internal mechanics.
 
-Render the answer (a small card for one how-to, the fuller map for "what can I do"), then end on the next move: the command that does it (`/watt:explore`, `/watt:audience`, `/watt:quickstart`), read-more, or — only if it's genuinely unsupported — a feature request (step 5). **Name limits in the answer, woven in as a plain line — never a separate dead-looking card.** Never invent a capability the shape and docs don't support; say it's not there and offer the closest real path.
+Render the answer (a small card for one how-to, the fuller map for "what can I do"), then end on the next move: the command that does it (`/watt:explore`, `/watt:audience`, `/watt:configure`), read-more, or — only if it's genuinely unsupported — a feature request (step 5). **Name limits in the answer, woven in as a plain line — never a separate dead-looking card.** Never invent a capability the shape and docs don't support; say it's not there and offer the closest real path.
 
 ### 3 — Troubleshoot a problem ("something's not working")
 
 The user wants the thing to *work* — so resolve it first, and fall back to filing only if you can't. Work it fast; never a debugging marathon they didn't ask for.
 
-1. **User-side — a usage or setup mistake?** Answer it from the docs (step 2's docs path) and you're done. A connect/setup problem (the connector's grayed out, not connected) is `/watt:quickstart`'s — point there.
+1. **User-side — a usage or setup mistake?** Answer it from the docs (step 2's docs path) and you're done. A connect/setup problem (the connector's grayed out, not connected) is `/watt:configure`'s — point there.
 2. **Already fixed?** If it looks Watt-side, check the changelog (step 4) and, when you know their version, whether a fix shipped — if so, tell them to update.
 3. **Can't resolve it, or it's a clear defect?** Now filing earns its place — and the hard part's done. Say plainly you couldn't fix it from here, then hand straight to **step 5** with the bug **pre-drafted from what you just diagnosed** — the symptom, what you tried and ruled out, expected vs. actual — so the user confirms a draft instead of re-explaining from scratch. Offer a workaround alongside it if one exists.
 
-Answer the problem; never reflexively bounce a question that has a real answer to another command — that's a dead end with extra steps. (A redirect to explore / audience / quickstart is for asks that *belong* to those commands, per Entry — not for a problem you can resolve right here.)
+Answer the problem; never reflexively bounce a question that has a real answer to another command — that's a dead end with extra steps. (A redirect to explore / audience / configure is for asks that *belong* to those commands, per Entry — not for a problem you can resolve right here.)
 
 ### 4 — What's changed & whether you're current
 
@@ -157,5 +157,5 @@ End on a decision: open one, file a related ticket (step 5, referencing it), or 
 
 ## Failure modes
 
-- **A Watt call fails on a connection or authentication problem.** That's not a transient to retry and not yours to work around: don't loop the connect or authentication tools, don't go diagnosing the connector. Stop and send the user to `/watt:quickstart`, which owns the connect path and recovery docs.
+- **A Watt call fails on a connection or authentication problem.** That's not a transient to retry and not yours to work around: don't loop the connect or authentication tools, don't go diagnosing the connector. Stop and send the user to `/watt:configure`, which owns the connect path and recovery docs.
 - **The docs are unreachable.** Answer from the shape written here, say plainly that you couldn't reach the docs, and offer the docs root — never invent the page's contents.
