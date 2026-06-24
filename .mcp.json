@@ -1,6 +1,6 @@
 {
   "mcpServers": {
-    "signal-graph": {
+    "Signal Graph": {
       "type": "http",
       "url": "https://api.wattdata.xyz/v2/mcp",
       "description": "Watt Signal Graph MCP. First tool call triggers OAuth in the browser."

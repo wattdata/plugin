@@ -1,16 +1,18 @@
 ---
 name: explore
 description: Find out what audience signals exist for an idea about people. Describe who you're trying to reach in plain English and see what's out there — which signals Watt has, how big and how fresh each one is, and what related angles are worth a look. A guided, one-question-at-a-time walk, so you get the lay of the land before building anything from it. Start here to size up an idea or get your bearings — "what's out there for runners", "is Watt a fit for X", "what else relates to Y" — or type /watt:explore.
-compatibility: Requires the remote Watt MCP server (network access).
+compatibility: Designed for Claude Cowork, Claude Code, or Agent SDK. Requires the signal-graph MCP connector.
 ---
 
 # Explore the Signal Graph
 
 ## Purpose
 
-`/watt:explore` is the **discovery** surface — an interactive way to interrogate the Signal Graph. The user brings a question or a plain-English idea about people ("folks planning corporate events", "is Watt any good for reaching home cooks?") and you help them find out what Watt actually holds for it: probe what the graph really has, ask one concrete question at a time, and let every answer steer the next probe.
+**Supported platform first.** Watt runs in Claude Cowork, Claude Code, or the Claude Agent SDK — not the Claude Chat app, where only these skill files load and the rest of Watt — its subagents, hooks, context, scripts, and the Signal Graph connector — does not. If the user isn't on a supported platform, tell them plainly to switch before continuing; otherwise this will not function correctly.
 
-The graph is ~200k signals and changes — there is no list to read; **the only way to know its shape is to probe it**, and that's what this surface is for. The questions it answers:
+`/watt:explore` is the **discovery** surface — an interactive way to interrogate the Signal Graph. The user brings a question or a plain-English idea about people ("folks planning corporate events", "is Watt any good for reaching home cooks?") and you help them find out what Watt actually holds for it: probe what the graph has, ask one concrete question at a time, and let every answer steer the next probe.
+
+The graph is ~200k signals — there is no list to read; **the only way to know its shape is to probe it**, and that's what this surface is for. The questions it answers:
 
 - **"What does Watt have on *X*?"** — the signals behind an idea, how big and fresh.
 - **"Is Watt good for *Y*?"** — whether the graph can express the people they mean.
@@ -21,7 +23,7 @@ What the user *learns* is the value. A **signal pool** — signals they choose t
 
 **One decision per turn.** Each turn ends at one decision only the user can make — delivered per the render contract (`context/visuals.md`) — and stops *there*. The user steers between turns; that steering is the walk.
 
-**Explore opens the space up.** Its job is divergent — surface what's there, answer what they're asking, point at what's adjacent. Turning signals into people is `/watt:audience`'s lane; explore points the way and hands off.
+**Explore opens the space up.** Its job is divergent — surface what's there, answer what they're asking, point at what's adjacent.
 
 ## Works with
 
@@ -52,7 +54,7 @@ That structure shapes your probes and dispatches — and **none of its jargon ev
 - **An idea or question arrives** ("people doing corporate event planning", "what's in here for trail runners?"). Go to the opening (flow step 1).
 - **A built stack or audience record arrives** — back from a build, "keep exploring from here". Seed the session from it: its signals enter as kept signals with their roles and hashes, their angles marked covered, and any reach figure carried as "measured then" (a claim, never re-verified here). Then resume the normal loop on what's *adjacent* — the first beat asks where to look next, not what they already have. Still read-only: coming back from a build changes the starting territory, never this lane.
 - **Bare `/watt:explore`.** Ask one question: *"What are you curious about? Describe the people in plain English — e.g. 'people getting into trail running' — or ask what Watt has for a space."*
-- **A list of people / "profile these".** Explore explores the graph; it doesn't take in sets of people. Say so plainly and offer the idea-shaped way in.
+- **A list of people / "profile these".** Explore explores the graph; it doesn't take in sets of people — reading or building from a list you own is `/watt:audience`. Say so plainly, point there, and offer the idea-shaped way in if they'd rather size up the space first.
 
 There is no size goal to collect — don't ask for one. If the user volunteers a target count, that's the `/watt:audience` flow's concern: explore shows what exists; it doesn't fit anything to a number.
 
@@ -62,7 +64,7 @@ The loop is a **graph-grounded interview**: every question you ask is informed b
 
 ### 1 — Open on what the graph holds
 
-Probe before you ask. Read the idea for its **angles** — the distinct concepts inside it, in the user's words — and run a quick `trait_search` on **at most one or two**: the most load-bearing angle, plus one only if it's genuinely co-equal. (Probing every angle at once is the all-at-once pull this loop exists to prevent — the rest get their own beats.) Before you render anything this turn, make the `visualize` tool's `read_me` setup call — that puts the render contract in context ahead of the candidate card, explore's first render of the session. Then narrate the probe in a line, **render what came back as the candidate card** (the step-2 render) so the user *sees* the signals instead of reading a prose list, then open with the idea read back and a **concrete first question** as the beat's decision — *"the graph holds the beauty side a few ways — active makeup intent, confirmed purchases, named-brand affinity. Which feels like your people?"* (sizes and freshness live in the card). **Then stop** — the opening turn ends here, like every beat; nothing else is probed beyond the opening one or two.
+Probe before you ask. Read the idea for its **angles** — the distinct concepts inside it, in the user's words — and run a quick `trait_search` on **at most one or two**: the most load-bearing angle, plus one only if it's genuinely co-equal. (Probing every angle at once is the all-at-once pull this loop exists to prevent — the rest get their own beats.) Before you render anything this turn, make the `visualize` tool's `read_me` setup call — that puts the render contract in context ahead of the candidate card, explore's first render of the session. Because it's the first card, gloss its metric tokens once in plain English so they don't read as jargon — `size` is roughly how many people the signal reaches, `fresh` (vs. `standard`) means recently refreshed, and `sim` is how closely the signal matches the idea, on a 0–1 scale; say it once, and don't repeat it on later cards. Then narrate the probe in a line, **render what came back as the candidate card** (the step-2 render) so the user *sees* the signals instead of reading a prose list, then open with the idea read back and a **concrete first question** as the beat's decision — *"the graph holds the beauty side a few ways — active makeup intent, confirmed purchases, named-brand affinity. Which feels like your people?"* (sizes and freshness live in the card). **Then stop** — the opening turn ends here, like every beat; nothing else is probed beyond the opening one or two.
 
 Never open with an abstract interview — "what are your must-haves?" asked in the void answers nothing the graph can't make concrete. Must-haves and exclusions surface the same way, as proposals grounded in real signals ("everyone here is a woman — is that a gate, or just likely?"). A brief full of concrete names reads sharp but usually carries the most angles; concreteness is not narrowness.
 
@@ -84,6 +86,8 @@ ask      the beat's decision, per the render contract — 2–4 concrete
          are just the few worth deciding between — then stop
 pick     their answer steers the next probe
 ```
+
+**Render a clean signal name; keep distinct signals distinct.** A trait value may arrive as a raw taxonomy path (`Category>Subcategory>Leaf`) or carry a stray separator/marker — graph scaffolding, not a label for the user. Show the readable concept, and **keep the parent path wherever it's what tells two candidates apart** — a bare-leaf `Dash Cam` and a path-leaf `…>Dash Cameras` are *different signals*, different hashes, different reach, and the hierarchy is exactly what shows it. List every distinct signal as its own card entry at its own size; never fold or merge look-alikes into one, even when they read as the same concept — they're separate signals the user picks among, and collapsing them would hide a real difference.
 
 Question mechanics:
 
@@ -119,24 +123,18 @@ Dispatch `signal-recommender` after a read, or when the user asks what else is o
 
 ### 7 — Close on understanding
 
-The walk converges when the user has their answer, not when a signal pool is "done". Track each angle as **open**, **covered**, or **consciously set aside**: an angle is *covered* only when the user signals they're done with it — a pick plus a move-on, or an explicit "that's enough there" — never the moment its first pick lands; when in doubt it's open, and you offer to keep exploring it. When nothing is open, the next question offers the read (step 5); after the read, the close — with "keep exploring" an option at both. Convergence is offered, never imposed.
+The walk converges when the user has their answer, not when a signal pool is "done". Track each angle as **open**, **covered**, or **set-aside** (deliberately parked): an angle is *covered* only when the user signals they're done with it — a pick plus a move-on, or an explicit "that's enough there" — never the moment its first pick lands; when in doubt it's open, and you offer to keep exploring it. When nothing is open, the next question offers the read (step 5); after the read, the close — with "keep exploring" an option at both. Convergence is offered, never imposed.
 
-On close, if anything was kept, render the kept set as the **pool view** — what they kept, held in session. Then summarize what they learned: the shape of this corner of the graph, what the signals look like, what's adjacent and still unexplored — and, if they kept signals, that those carry into `/watt:audience` whenever they want the actual people. **When they take it forward, route — never hand them homework:** the kept signals travel into `/watt:audience` in session context; never ask the user to copy, paste, or carry anything themselves. If they ask for the people — the list, the export, the combined headcount — be honest: turning signals into a set of people is `/watt:audience`'s job, outside explore.
+On close, if anything was kept, render the kept set as the **pool view** — what they kept, held in session. Then summarize what they learned: the shape of this corner of the graph, what the signals look like, what's adjacent and still unexplored — and, if they kept signals, that those carry into `/watt:audience` whenever they want the actual people — theirs to combine and choose among when they build there, options to assemble rather than a fixed set. **When they take it forward, route — never hand them homework:** the kept signals travel into `/watt:audience` in session context; never ask the user to copy, paste, or carry anything themselves. If they ask for the people — the list, the export, the combined headcount — be honest: turning signals into a set of people is `/watt:audience`'s job, outside explore.
 
 ## How to behave
 
-- **End every turn at its question.** The user steers between turns — batching beats steals the steering, and the steering is the product. One pivot per turn; don't batch silently.
-- **The exploration is the user's.** Nothing is kept unpicked; the profiler and recommender see only what the user has in hand, after the user says go.
-- **Narrate every tool call in plain English** — probes and dispatches alike; never dump a structured payload. (The plugin emits automatic *advisor started/done* markers around dispatches — your narration is the substance on top, not a replacement.)
-- **Report what came back before acting on it.** One plain line per probe or advisor return — "found ~20 strong event-planning signals, nothing tight for 'venue sourcing'". The user sees *what was found*, not just that something ran.
-- **Show the math.** A profiler read renders as the profile view with the per-signal axes that produced it, and candidate lists appear in relevance order with similarity legible — "why is X read as tighter than Y" must be answerable from what's on screen.
-- **Render every probe; the visual is what the user reads.** A probe with signals renders its candidate card; a kept-set change re-renders the pool view; a profiler read renders the profile view. The question still lands the one decision.
-- **Never invent signals.** No strong match → surface the closest and flag it. Don't fabricate or silently substitute.
-- **Proposed exclusions are proposals.** Not active until the user confirms — a mis-applied exclusion silently hides relevant territory.
-- **Read-only, discovery-only.** Never materialize a set of people, count a combination, enrich, resolve, export, or persist a record file. The kept signals live in session and carry forward by handoff; building and saving an audience are `/watt:audience`'s job, never explore's.
-- **Per-signal sizes are plain facts; combined counts are not.** A signal's size comes straight from the graph — "how many match all of this together" requires building a set, downstream's job, never yours.
-- **New dimensions stay exploration.** Geography, a life stage, a new angle mid-walk — more discovery, never a cue to assemble, size, or sample.
-- **Describe; don't decide.** You say what's in the graph and what's worth a look. What to do with it is the user's call.
+- **End every turn at its question — one pivot per turn.** Batching beats steals the user's steering, and the steering is the product.
+- **Narrate every probe and dispatch in plain English, and report what came back before acting on it** — one plain line ("~20 strong event-planning signals, nothing tight for 'venue sourcing'"), never a structured payload.
+- **The exploration is the user's.** Nothing is kept unpicked; the profiler and recommender see only what's in hand, after the user says go.
+- **Show the math.** Candidate cards run in relevance order with similarity legible; a profiler read renders its per-signal axes — so "why is X read tighter than Y" is answerable from the screen.
+- **Never invent a signal.** No strong match → surface the closest and flag it; never fabricate or silently substitute. A proposed exclusion isn't active until the user confirms it — a mis-applied one silently hides relevant territory.
+- **Read-only, discovery-only.** Never materialize, count a combination, enrich, resolve, export, or persist a record file. A per-signal size is a plain graph fact; "how many match all of this together" needs a built set — downstream's job. A new dimension mid-walk — geography, a life stage — is more discovery, never a cue to assemble or size. What to do with any of it is the user's call.
 
 ## Refuse cleanly
 

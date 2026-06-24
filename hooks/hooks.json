@@ -16,6 +16,17 @@
             "statusMessage": "Watt: checking for updates…"
           }
         ]
+      },
+      {
+        "matcher": "startup|resume",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/session-ticket-check.sh\"",
+            "asyncRewake": true,
+            "statusMessage": "Watt: checking your tickets…"
+          }
+        ]
       }
     ],
     "PreToolUse": [

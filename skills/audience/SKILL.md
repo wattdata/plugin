@@ -1,11 +1,14 @@
 ---
 name: audience
 description: Turn an idea into an actual audience. Build a list of people — to a size you pick, the widest reach, or the highest-intent few — profile a market to see who's in it and how large it is, read who an audience reaches, or export it as a platform-ready file for Meta, Google, or Reddit. Or start from a list you own — match it, expand it to every match, or read who's in it. Start here when you want the people, not just the lay of the land — "build me an audience of …", "the highest-intent people for X", "how many people are in my market", "match my customer list", "who's in this audience", "export this to Meta" — or type /watt:audience.
+compatibility: Designed for Claude Cowork, Claude Code, or Agent SDK. Requires the signal-graph MCP connector.
 ---
 
 # Audience
 
 ## Purpose
+
+**Supported platform first.** Watt runs in Claude Cowork, Claude Code, or the Claude Agent SDK — not the Claude Chat app, where only these skill files load and the rest of Watt — its subagents, hooks, context, scripts, and the Signal Graph connector — does not. If the user isn't on a supported platform, tell them plainly to switch before continuing; otherwise this will not function correctly.
 
 `/watt:audience` is the front door to the audience lifecycle — and the **only** audience command the user can type. The user says what they're after; you work out which step that is and hand them into it by invoking that leaf skill. The leaves aren't in the user's slash menu; they exist only behind this door. You run no Watt tools yourself — the leaves do the work.
 
