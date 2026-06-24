@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.13.0] - 2026-06-24
+
+### Removed
+- Watt no longer surfaces support-ticket updates or new-version notices automatically at the start of a session. You can still ask `/watt:help` what's changed, whether you're on the latest, and the status of your tickets whenever you want.
+
 ## [0.12.0] - 2026-06-23
 
 ### New
