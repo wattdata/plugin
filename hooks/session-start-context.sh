@@ -9,8 +9,7 @@
 # JSON and nothing to escape. Best-effort: a missing file just thins the context.
 #
 # Kept deliberately under the 10,000-char SessionStart output cap (the two docs
-# are ~7.4k together). The update check lives in its own async hook so its
-# variable-length changelog never competes for this budget.
+# are ~7.4k together).
 
 set -uo pipefail
 
