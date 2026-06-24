@@ -37,7 +37,7 @@ Restart Claude Code, then run any `/watt` command.
   to see who's in it; read who an audience reaches; or export it to Meta or
   Google. You can also start from a list you own — match it, expand it, or learn
   what defines it.
-- **`/watt:quickstart`** — a short guided walkthrough if you're new.
+- **`/watt:configure`** — a short guided walkthrough if you're new.
 - **`/watt:help`** — what Watt can do, whether the data you need exists (it goes
   and checks), or reach the team.
 

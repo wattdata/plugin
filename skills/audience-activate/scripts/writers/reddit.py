@@ -1,21 +1,23 @@
 #!/usr/bin/env python3
 """Reddit audience writer — turns a materialized Watt audience CSV
-into Reddit upload files.
+into a Reddit upload file.
 
 Owns its audience-size-critical transform in this one file — the column layout,
 the hash-vs-raw decisions, and the CLI runner. The can't-vary plumbing
-(SHA-256, the Watt CSV reader, presence checks) is imported from ``_common`` —
-see that module's header for why the line falls where it does.
+(SHA-256, RFC 4180 escaping, the Watt CSV reader, presence checks) is imported
+from ``_common`` — see that module's header for why the line falls where it does.
 
-Audience-size-critical, so keep the hashing and column layout stable: Reddit takes
-two match keys, each in its own single-column file — emails SHA-256-hashed
-(lowercased, trimmed), and mobile-ad IDs SHA-256-hashed (lowercased). Unlike
-Meta and Google, Reddit hashes the device ID rather than sending it raw. The
-files carry no header row — one hex digest per line. Deterministic — the same
-input always produces the same output.
+Audience-size-critical, so keep the hashing and column layout stable: Reddit's
+customer-list upload takes one combined CSV with the template's three-column
+header — ``Emails (hashed)``, ``Emails (unhashed)``, ``Mobile Ad IDs
+(unhashed)`` — and one identifier per row. Emails are SHA-256-hashed
+(lowercased, trimmed) into the hashed column, leaving the unhashed-email column
+empty. Mobile-ad IDs ride raw in their own column — Reddit's upload takes the
+device ID unhashed (unlike the email). Reddit matches on email or device ID; it
+takes no phone. Deterministic — the same input always produces the same output.
 
-Writes ``reddit_email.csv`` and ``reddit_maid.csv``. Requires ``_common.py``
-beside it in ``scripts/writers/``.
+Writes ``reddit_audience.csv``. Requires ``_common.py`` beside it in
+``scripts/writers/``.
 """
 import os
 import sys
@@ -26,10 +28,16 @@ from _common import (
     any_email,
     any_maid,
     read_watt_csv,
+    _csv_field,
 )
 
 # entity_find `domains` the Reddit export needs materialized.
 IDENTIFIERS = ["email", "maid"]
+
+# Reddit's customer-list template header — one combined file, exactly these
+# columns in this order. Reddit rejects an upload whose headers are changed or
+# removed, so keep this row verbatim.
+HEADER = ["Emails (hashed)", "Emails (unhashed)", "Mobile Ad IDs (unhashed)"]
 
 
 # ----- Reddit normalization policy -----
@@ -38,9 +46,9 @@ def email_lower_trim(e):
     return e.strip().lower() if e else ""
 
 
-def maid_lower(m):
-    """Lowercase the device ID before hashing — Reddit hashes the MAID (unlike
-    Meta and Google, which send the device ID raw)."""
+def maid_raw(m):
+    """Lowercase and trim, but do NOT hash — Reddit's upload takes the device ID
+    raw (the ``Mobile Ad IDs (unhashed)`` column), unlike the email."""
     return m.strip().lower() if m else ""
 
 
@@ -50,34 +58,36 @@ def has_required(row):
     return any_email(row) or any_maid(row)
 
 
-def write_lines(path, lines):
-    """Write one value per line — Reddit's single-column files carry no header,
-    and a SHA-256 hex digest never needs RFC 4180 escaping."""
+def write_rows(path, header_row, rows):
+    """Write positional rows (lists of cells) as RFC 4180 CSV — CRLF line
+    endings, minimal quoting. The header row is mandatory — Reddit keys the
+    upload on its exact column names."""
+    lines = [",".join(_csv_field(h) for h in header_row)]
+    for cells in rows:
+        lines.append(",".join(_csv_field(c) for c in cells))
     with open(path, "w", encoding="utf-8", newline="") as f:
-        for v in lines:
-            f.write(v + "\n")
+        f.write("\r\n".join(lines) + "\r\n")
 
 
 def write_reddit(rows, out_dir):
-    """Write ``reddit_email.csv`` and ``reddit_maid.csv``.
+    """Write ``reddit_audience.csv`` — one combined file, the template header,
+    one identifier per row.
 
-    Both keys are SHA-256-hashed, each to its own single-column, header-less
-    file (Reddit's email and device-ID lists are separate match paths). Emails
-    explode one digest per email per person; the device file carries the
-    top-quality device ID per person.
+    Emails explode one row per email per person, SHA-256-hashed into the hashed
+    column; the unhashed-email column stays empty. The device ID rides raw in
+    its own column — the top-quality device ID per person.
     """
     rows = list(rows)
-
-    email_digests = []
+    out = []
     for r in rows:
         for i in range(1, MAX_PER_TYPE + 1):
             e = r.get(f"email{i}") or ""
             if e:
-                email_digests.append(sha256_hex(email_lower_trim(e)))
-    write_lines(os.path.join(out_dir, "reddit_email.csv"), email_digests)
-
-    maid_digests = [sha256_hex(maid_lower(r.get("maid1") or "")) for r in rows if (r.get("maid1") or "")]
-    write_lines(os.path.join(out_dir, "reddit_maid.csv"), maid_digests)
+                out.append([sha256_hex(email_lower_trim(e)), "", ""])
+        m = r.get("maid1") or ""
+        if m:
+            out.append(["", "", maid_raw(m)])
+    write_rows(os.path.join(out_dir, "reddit_audience.csv"), HEADER, out)
 
 
 USAGE = """usage: reddit.py [--help] [--list-identifiers]

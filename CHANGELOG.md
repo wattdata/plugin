@@ -1,6 +1,18 @@
 # Changelog
 
+## [0.14.0] - 2026-06-24
+
+### Improved
+- `/watt:quickstart` is now `/watt:configure` — a setup and connectivity check you can run any time something stops connecting, not just at first install. It verifies your Signal Graph connection and that your exports can download for you, and walks you through fixing anything that's off, one step at a time.
+- `/watt:configure` now asks up front whether you're on a personal or organization account, then shows only the setup steps that apply to you — one clear move at a time, with a link to the full guide instead of a wall of instructions.
+- `/watt:configure` is more reliable at confirming your exports can download, so a working setup is no longer mistaken for a blocked one.
+
 ## [0.13.0] - 2026-06-24
+
+### Improved
+- `/watt:quickstart` now walks setup one step at a time — connecting the Signal Graph and getting your Claude settings right are separate beats, and each waits for you before it moves on.
+- `/watt:quickstart` now covers turning on automatic updates so you don't get stranded on a stale version, including the manual refresh path, and links the matching setup guide so you can follow along with screenshots instead of memorizing the steps.
+- `/watt:quickstart` now points you to Opus for the signal-engineering work, where its larger context and reasoning pay off most.
 
 ### Removed
 - Watt no longer surfaces support-ticket updates or new-version notices automatically at the start of a session. You can still ask `/watt:help` what's changed, whether you're on the latest, and the status of your tickets whenever you want.
@@ -20,6 +32,7 @@
 
 ### Fixed
 - `/watt:explore` now shows each signal under a clean, readable name, keeping the category path wherever that's what tells two close signals apart — so look-alike signals at different sizes read as the distinct signals they are.
+- Reddit exports from `/watt:audience` now produce a file that loads directly into Reddit Ads, with emails and mobile device IDs in the exact format Reddit's customer-list upload expects.
 
 ## [0.11.0] - 2026-06-19
 

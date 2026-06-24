@@ -14,12 +14,12 @@ grounded question at a time. So "what does Watt have on *X*?" is answered by
 
 | Command | What it does | Answers questions like |
 |---|---|---|
-| `/watt:quickstart` | Guided first-run setup and orientation: connects Watt to the Signal Graph, gets the Claude settings right, then points to the three ways in (audience · explore · help). | "how does Watt work?", "I just installed this — where do I start?" |
+| `/watt:configure` | Guided setup and connectivity check: confirms a supported surface, verifies the Signal Graph connection and file downloads, walks through turning on automatic updates, and fixes anything that's off — at first run or any time something stops connecting. | "set up Watt", "where do I start?", "connect Watt", "Watt isn't working", "my export is blocked" |
 | `/watt:explore` | **Interactive graph exploration.** Probe what the graph actually holds for an idea about people, one concrete question per turn — discover the signals behind it, how big and fresh each is, and what's adjacent. Read-only: never builds, sizes, or exports. | "what does Watt have on *X*?", "is Watt good for *Y*?", "what else relates to *N*?", "how could I reach *Z*?" |
 | `/watt:audience` | The audience-lifecycle front door — routes to build / profile / read / export. Carries an explore session's kept signals straight in; takes an owned list (customers, leads) as a build anchor too. | "build me an audience of …", "match my customer list", "find more like my customers", "who's in this audience?", "an audience profile for my client", "export it to an ad platform" |
 | `/watt:help` | **Get unstuck with Watt.** Answers what you can do and how (from the docs), tells you what's changed and whether you're current, points you to the right surface, or reaches the team (bug · signal request · feature request · human). Answers first; files fast once the need is clear. For what data exists, it points to `/watt:explore`. | "what can Watt do", "how do I build an audience", "why is X failing", "something's broken", "I need a signal for *Y*", "I need a human", "what's new", "what have I filed / status of WATT-212" |
 
-**Getting connected.** Watt runs on its **Signal Graph connector**, enabled once per host. `/watt:quickstart` confirms it and walks a new user through enabling it — including the admin route when a team or org plan has it locked; it owns the connect path and the recovery docs.
+**Getting connected.** Watt runs on its **Signal Graph connector**, enabled once per host. `/watt:configure` verifies it and walks the user through connecting it — including the admin route when a team or org plan has it locked; it owns the connect path and the recovery docs, and is the place to return to any time something stops connecting.
 
 ## Audience steps — reached by routing under `/watt:audience` (not separate commands)
 
