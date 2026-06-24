@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.12.0] - 2026-06-23
+
+### New
+- When you start working in Watt, it now surfaces any of your support tickets that changed in the last few days — so a team reply, a status change, or a fix reaches you right where you are.
+- `/watt:help` now works on every surface, including the Claude Chat app, and opens with a menu of the common things you can ask — what you can do, why something isn't working, what's changed, or reaching the team.
+
+### Improved
+- `/watt:help` gets you unstuck faster: it answers how-to questions from the live docs, points you to the right command, and when you report a bug or request a signal or feature it suggests a workaround and files it for the team.
+- Watt now makes clear it's built for Claude Cowork, Claude Code, and the Claude Agent SDK: `/watt:quickstart` confirms your platform before setup, and `/watt:audience` and `/watt:explore` flag it when you're somewhere Watt can't run, like the Claude Chat app.
+- `/watt:explore` now points you to `/watt:audience` when you bring it a list of people, so it's clear where to read or build from a list you already own.
+- `/watt:explore` now explains the figures on each signal the first time you see them — its size, how fresh it is, and how closely it matches your idea — so the findings read clearly from the start.
+- `/watt:explore` now makes clear that the signals you keep are yours to combine and choose among when you build an audience in `/watt:audience`.
+
+### Fixed
+- `/watt:explore` now shows each signal under a clean, readable name, keeping the category path wherever that's what tells two close signals apart — so look-alike signals at different sizes read as the distinct signals they are.
+
 ## [0.11.0] - 2026-06-19
 
 ### New

@@ -26,9 +26,17 @@ Then tell them what quickstart will do:
 - **Finish getting set up** — they're already in Claude and almost there; just connect Watt to the Signal Graph so everything works.
 - **Show you around** — the ways to use Watt and a few best practices, then turn you loose.
 
-Keep it to a few lines, and make no tool calls yet — the work starts in step 2.
+Keep it to a few lines, and make no tool calls yet — the work starts once they've confirmed their platform.
 
-### 2 — Get connected
+### 2 — Confirm the platform
+
+Before anything else, confirm they're somewhere Watt actually runs — in the Claude Chat app only these skill files load, not the subagents, hooks, context, scripts, or Signal Graph connector the rest of Watt needs.
+
+Ask which platform they're using, as Interactive inputs (per the render contract — choices use Claude's native clickable options, not the visualize renderer): **Claude Chat**, **Claude Cowork**, **Claude Code**, **Agent SDK**, and **Something else**. A typed reply always wins.
+- **Claude Cowork**, **Claude Code**, or **Agent SDK** → supported; move to step 3.
+- **Claude Chat** or **Something else** → tell them plainly Watt supports only Claude Cowork, Claude Code, and the Agent SDK, and they'll need to switch before continuing. Don't try to connect from here — stop on that note.
+
+### 3 — Get connected
 
 Two steps every time: **(1)** install and connect the Signal Graph connector, **(2)** turn on the Claude settings that make Watt work. What varies is whether they're on a **personal** account or a **Claude organization** (team/enterprise) — orgs keep these settings org-wide, so changing them needs the **Owner** role.
 
@@ -52,9 +60,9 @@ Assume the person doing this isn't technical and isn't a Claude expert — they'
   Cowork is already on, so once those two are set they're done.
 - **Organization account** → the same two capability settings plus Cowork, but org-wide and gated on the **Owner** role: under **Capabilities** (https://claude.ai/admin-settings/capabilities), turn on **Allow network egress** and set the domain allowlist to **All domains**, then enable Cowork (https://claude.ai/admin-settings/cowork). If they're the Owner, they set all of it; if not, send the admin the link from step 1.
 
-**End the beat with a tappable confirmation, not an open-ended wait.** Offer **"I'm connected"** and **"I'm stuck"** as Interactive inputs (per the render contract — choices use Claude's native clickable options, not the visualize renderer); a typed reply always wins. You can't detect the connection yourself, and probing one mid-setup just fails and tempts a retry loop — so go on their pick. On **"I'm connected"**, run a single `trait_search` (e.g. "home"), narrated in a warm line, as a quick liveness check, then move to step 3. On **"I'm stuck"** — or if it just won't connect — don't push it; point them to `/watt:help`.
+**End the beat with a tappable confirmation, not an open-ended wait.** Offer **"I'm connected"** and **"I'm stuck"** as Interactive inputs (per the render contract — choices use Claude's native clickable options, not the visualize renderer); a typed reply always wins. You can't detect the connection yourself, and probing one mid-setup just fails and tempts a retry loop — so go on their pick. On **"I'm connected"**, run a single `trait_search` (e.g. "home"), narrated in a warm line, as a quick liveness check, then move to step 4. On **"I'm stuck"** — or if it just won't connect — don't push it; point them to `/watt:help`.
 
-### 3 — Find your way around
+### 4 — Find your way around
 
 Point them at the three ways to use Watt — one line each, plain language:
 - **`/watt:audience`** — the main way in, where you'll spend most of your time. Describe who you want to reach; Watt engineers the signals into an audience, then you analyze who's in it or activate it on one or more platforms.

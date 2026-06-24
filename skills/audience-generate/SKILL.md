@@ -2,7 +2,7 @@
 name: audience-generate
 description: Generate a person audience from a plain-English brief — discover the signals behind it, score them with the math visible, and compose them into an audience whose reach is measured. The build step behind /watt:audience; routes to the leaf that fits how the audience should be built. Produces a signal stack + measured reach, or a roster — never an export, never contact data. Not a user command — /watt:audience is the front door. Use when a build-shaped ask arrives — "build me an audience of …", "I need about N people who …", "the highest-intent people in-market for X", "where do these people cluster", "a lead list of in-market companies", "match my customer list / build from my customers" — or when a /watt:explore signal pool is ready to become an audience.
 user-invocable: false
-compatibility: Requires the remote Watt MCP server (network access).
+compatibility: Designed for Claude Cowork, Claude Code, or Agent SDK. Requires the signal-graph MCP connector.
 ---
 
 # Generate an audience
@@ -132,7 +132,7 @@ This record is the stack's canonical serialization: names ride beside the hashes
 
 - **End every turn at its question.** Elicitation, picks, pivots, the compose gate, target-edge leverage — each is the user's call, and the turn stops there. Composing an audience the user didn't steer is the failure, not the deliverable.
 - **Route; don't run the compose.** Settle the brief and run the shared discovery, but the target and the compose belong to the leaf — re-eliciting what the leaf elicits, or composing here, duplicates the flow.
-- **Narrate every dispatch in plain English;** report what came back in one line before acting on it. Never dump a structured payload. (The plugin emits automatic *advisor started/done* markers around dispatches — your narration is the substance on top.)
+- **Narrate every dispatch in plain English;** report what came back in one line before acting on it. Never dump a structured payload. (The plugin emits an automatic *advisor-done* marker when a dispatch finishes — your narration is the substance on top.)
 - **Show the math.** The profiler's feature-vector axes are on screen; the user answers "why is X above Y" from the render. Never hand-score a signal.
 - **Reach is measured; sizes are facts.** A signal's size comes from the graph; what a combination reaches comes only from the strategy worker's probes. Never add sizes together for the user.
 - **Never invent signals.** Unmatched concepts surface honestly with the closest match flagged — in discovery and in geo lookup alike.

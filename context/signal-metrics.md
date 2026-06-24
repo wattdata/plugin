@@ -23,6 +23,7 @@ that isn't here).
 | `size` | both | How many entities carry the trait (raw count). |
 | `prevalence` | both | `size / universe` — the trait's share of the population it was measured against. |
 | `skew` | `trait_get` **only** | Ratio of what Watt observes to what its ground-truth model expects. `1.0` = perfectly calibrated; `>1` over-counts, `<1` under-counts. Search results don't carry it. |
+| `updated_at` | both | The trait's last-refresh date. Returned, but **not** the `freshness` basis today — see the `freshness` row for why. |
 
 ## Computed metrics
 
@@ -38,7 +39,7 @@ universe = size / prevalence
 | Metric | Equation | Range | Meaning |
 |---|---|---|---|
 | `relevance` | `1 / (1 + e^(−k·(similarity_score − s0)))` | [0, 1] | Match closeness, with the compressed similarity band (~0.6–0.85) stretched to fill [0,1]. The one query-time metric — `null` when no `similarity_score` is present. |
-| `freshness` | `age = 1 if domain=="intent" else 30` → `f_min + (1−f_min)·2^(−age/H)` | [f_min, 1] | Recency proxy. Watt exposes no per-trait recency, so `intent` is treated as fresh, everything else as standing. Half-life form is ready for a real `age` field. |
+| `freshness` | `age = 1 if domain=="intent" else 30` → `f_min + (1−f_min)·2^(−age/H)` | [f_min, 1] | Recency proxy by **domain**. Watt *does* expose `updated_at` per trait, but on the current graph traits refresh within ~2 weeks of each other, so raw recency barely separates them — the domain class (`intent` = live/behavioral, else standing) discriminates freshness better, so the axis keys off domain. The half-life form is ready to switch to a real `age = max(0, as_of − updated_at)` if the refresh cadence ever diverges. |
 | `rarity` | `−ln(prevalence)` | [0, ln(universe)] | How niche — surprisal in nats (raw, unbounded). |
 | `specificity` | `−ln(prevalence) / ln(universe)` | [0, 1] | `rarity` normalized to [0,1] against the universe. |
 | `breadth` | `clip( (ln(size) − ln(N_min)) / (ln(universe) − ln(N_min)), 0, 1 )` | [0, 1] | How big, normalized to [0,1]. |

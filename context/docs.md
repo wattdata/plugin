@@ -1,21 +1,31 @@
 # Watt plugin — pointing to the docs
 
 The published customer docs live at **https://wattdata.ai/docs** — Watt's
-long-form companion to the in-plugin help, and the one doc URL worth holding.
-The docs change over time, so **don't hardcode or memorize page paths** — find
-the right page live when you need it.
+long-form companion to the in-plugin help. The docs change over time, so
+**don't hardcode or memorize page paths** — find the right page live.
 
-## When a docs link would help an answer
+## Reaching a page
 
-- **Answer first** from the [capability index](./index.md). The docs are a
-  pointer *after* the answer, never a substitute — and at most one page.
-- **Find the page; don't guess it.** Fetch the docs root and follow its nav to
-  the page (the surest route), or web-search the topic — then link the URL you
-  actually reached, never a path assembled from memory. Can't find or reach a
-  specific page? Link the docs root (https://wattdata.ai/docs) and let the user
-  browse.
-- **Plain markdown link** in narration. The page is a web page — read it
-  in-session only if the user asks you to summarize it.
+- **The index is `https://wattdata.ai/llms.txt`** — a flat list of every docs
+  page with a one-line description. Fetch it, find the page whose description
+  fits, and take its `/docs/<path>`.
+- **Read the page's LLM-native content at the `llms.mdx` prefix** —
+  `https://wattdata.ai/llms.mdx/docs/<path>` (e.g.
+  `https://wattdata.ai/llms.mdx/docs/get-started/quickstart`). That's the
+  markdown form, best for reading in-session.
+- **Link the human page** — `https://wattdata.ai/docs/<path>` — when you offer
+  the user a read-more. Never link a path you didn't reach through llms.txt; if
+  you can't find the page, link the docs root and let them browse.
+
+## When a docs link helps an answer
+
+- **Answer first**, then offer at most one page as a plain markdown link — never
+  instead of answering.
+- **The plugin changelog is separate** — it lives in the public plugin repo
+  (read `https://raw.githubusercontent.com/wattdata/plugin/main/CHANGELOG.md`,
+  link the `blob` URL), not under `/docs`. The `/docs/signal-graph/changelog`
+  page is the *data* changelog — a different thing; don't answer plugin-version
+  questions from it.
 
 The docs are organized roughly as **Get started · Learn · Signal Graph ·
-Integrate** — enough to aim a search, not a list of URLs to reproduce.
+Integrate** — enough to aim, not a list of URLs to reproduce.

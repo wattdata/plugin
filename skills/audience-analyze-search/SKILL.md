@@ -2,7 +2,7 @@
 name: audience-analyze-search
 description: Read who a market is, starting from a plain-English brief — discover → pivot → read. The discovery-first way into audience-analyze, behind /watt:audience; size is an output, never a target. Aggregates only — never individual records, never an export. Not a user command. Use when a read-shaped ask arrives with a brief and no signals yet — "who's in the market for X", "profile this audience", "an audience profile for my client".
 user-invocable: false
-compatibility: Requires the remote Watt MCP server (network access).
+compatibility: Designed for Claude Cowork, Claude Code, or Agent SDK. Requires the signal-graph MCP connector.
 ---
 
 # Analyze a market from a brief

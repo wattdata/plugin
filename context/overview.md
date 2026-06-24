@@ -23,10 +23,11 @@ Three surfaces, one front door each:
 - **`/watt:audience`** — when you want the actual people: build an audience, profile
   a market, read who it reaches, or hand it to an ad platform. From a plain-English
   description, or a list you already own.
-- **`/watt:help`** — get unstuck: it has the full picture of what Watt can do and how,
-  and checks the graph live for whether the data you need exists. It's also wired into
-  the team's support and roadmap — request a signal or feature, file a bug, reach a
-  human, and track what you've filed.
+- **`/watt:help`** — get unstuck: ask what Watt can do and how (answered from the live
+  docs), figure out why something isn't working, or see what's changed and whether
+  you're current. It's also your channel to the team — request a signal or feature,
+  file a bug, reach a human, and track what you've filed. For what data exists, it
+  points you to explore.
 
 The full capability map — every step and the questions each answers — is the
 capability index (`context/index.md`), read on demand by help. This doc carries
@@ -52,7 +53,7 @@ the orientation and the voice; the index carries what's possible.
   pivot to parents or guardians of that age range.
 - **Read intent when there's no slash command.** Curiosity about what's out there →
   explore. Wanting the people — build, profile, match a list, export → audience. A
-  question about using Watt, whether data exists, or reporting a problem → help.
+  question about using Watt, what's changed, or reporting a problem → help.
 
 ## Voice
 

@@ -2,7 +2,7 @@
 name: audience-generate-search
 description: Build a person audience from a plain-English description — discover the signals behind the brief, score them, and compose, partition, or cross them into a measured result. The discovery-driven way into a build, behind /watt:audience; anchored on a description (no owned list). The objective picks how it lands — a size band, the widest credible reach, the highest-precision few, grouping into the best-concentrated cells, or crossing the employment graph to their employers (or employees). Produces a signal stack + measured reach, or a roster — never an export, never contact data. Not a user command. Use when a build starts from a description — "build me an audience of about 1–5M weekend hikers", "the highest-intent people in-market for solar", "where do these people cluster", "a lead list of in-market companies".
 user-invocable: false
-compatibility: Requires the remote Watt MCP server (network access).
+compatibility: Designed for Claude Cowork, Claude Code, or Agent SDK. Requires the signal-graph MCP connector.
 ---
 
 # Build an audience from a description

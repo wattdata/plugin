@@ -2,7 +2,7 @@
 name: audience-analyze
 description: Read who a built audience reaches, as aggregates over a deterministic sample — and, on request, a shareable signal membership report. The read step behind /watt:audience; routes to the way in that fits what the user has — a brief, signals they already hold, or a list of people. Aggregates only — never individual records, never contact data, never an ad-platform export. Not a user command — /watt:audience is the front door. Use when a read-shaped ask arrives — "who's actually in this audience", "what do these people look like", "an audience profile for my client" — or to sanity-check a signal stack before exporting.
 user-invocable: false
-compatibility: Requires the remote Watt MCP server (network access).
+compatibility: Designed for Claude Cowork, Claude Code, or Agent SDK. Requires the signal-graph MCP connector.
 ---
 
 # Analyze an audience
