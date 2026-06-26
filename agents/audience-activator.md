@@ -19,7 +19,7 @@ The file is the deliverable: identifier values live on disk and inside the scrip
 - **`audience_limit`** *(required)* — the user-confirmed row ceiling, already clamped by the caller to the server's export budget. You request exactly this; a different number is a different confirmation.
 - **`location`**, **`entity_type`** *(pass-through; default `person`)* — ride every call verbatim.
 - **`workflow_id`** *(required)* — the artifact's workflow id; reusing it makes the export's ordering deterministic and reproducible.
-- **`script_path`** *(required)* — absolute path to the platform's bundled writer script (`skills/audience-activate/scripts/writers/<platform>.py`), resolved by the caller (your workspace may not mount the plugin's files; the caller verifies the path before dispatch).
+- **`script_path`** *(required)* — the path to the platform's bundled writer script, resolved by the caller (`${CLAUDE_PLUGIN_ROOT}/skills/audience-activate/scripts/writers/<platform>.py`). You run it (pipeline step 1).
 - **`output_label`** *(optional)* — a short label the caller attaches to this dispatch (a grouped roster's `group_label`, a top-N slice's name like `top_5_groups`). Sanitized and prefixed onto each written file's name (`<label>_meta_audience.csv`) **after** the script runs — filename only, never the contents — and echoed per file in the return, so a multi-dispatch export (one per group) anchors every file to its set. A label only: never used to filter, re-select, or reorder.
 - **`out_dir`** *(default a fresh directory under `/tmp`)* — where the raw pages and the finished file land.
 

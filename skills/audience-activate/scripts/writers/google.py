@@ -30,7 +30,7 @@ from _common import (
     any_phone,
     any_maid,
     read_watt_csv,
-    _csv_field,
+    csv_line,
 )
 
 # entity_find `domains` the Google export needs materialized.
@@ -66,19 +66,9 @@ def has_required(row):
     return has_contact(row) or any_maid(row)
 
 
-def write_rows(path, header_row, rows):
-    """Write positional rows (lists of cells) as RFC 4180 CSV — CRLF, minimal
-    quoting. Positional because Google repeats column headers (Email×3, Phone×3).
-    """
-    lines = [",".join(_csv_field(h) for h in header_row)]
-    for cells in rows:
-        lines.append(",".join(_csv_field(c) for c in cells))
-    with open(path, "w", encoding="utf-8", newline="") as f:
-        f.write("\r\n".join(lines) + "\r\n")
-
-
 def write_google(rows, out_dir):
-    """Write ``google_audience.csv`` and ``google_audience_maid.csv``.
+    """Stream ``google_audience.csv`` and ``google_audience_maid.csv``, returning
+    ``(total, written)`` — persons seen and persons Google can reach by any path.
 
     Email/phone/first/last are SHA-256-hashed; country and zip ride plaintext.
     Mobile device IDs go to a separate one-column file, unhashed (Google's
@@ -86,33 +76,46 @@ def write_google(rows, out_dir):
     row only when they carry a contact identifier (email, phone, or name+ZIP); a
     device-ID-only person appears only in the device-ID file. So the contact file
     can never carry a row with no contact identifier.
+
+    Both files are written in a single pass over the streamed input — each person
+    is routed to the contact file, the device-ID file, or both as it arrives — so
+    the writer holds one person at a time, never the whole audience. The headers
+    repeat (Email×3, Phone×3), so the contact file is positional.
     """
-    contact_rows = [r for r in rows if has_contact(r)]
-
-    path = os.path.join(out_dir, "google_audience.csv")
+    contact_path = os.path.join(out_dir, "google_audience.csv")
+    maid_path = os.path.join(out_dir, "google_audience_maid.csv")
     header = (["Email"] * MAX_PER_TYPE) + (["Phone"] * MAX_PER_TYPE) + ["First Name", "Last Name", "Country", "Zip"]
-    out = []
-    for r in contact_rows:
-        fn, ln = split_name(r.get("name1") or "")
-        addr = parse_address(r.get("address1") or "")
-        cells = []
-        for i in range(1, MAX_PER_TYPE + 1):
-            e = r.get(f"email{i}") or ""
-            cells.append(sha256_hex(email_lower_trim(e)) if e else "")
-        for i in range(1, MAX_PER_TYPE + 1):
-            p = r.get(f"phone{i}") or ""
-            cells.append(sha256_hex(phone_keep_plus(p)) if p else "")
-        cells += [
-            sha256_hex(fn.strip().lower()),
-            sha256_hex(ln.strip().lower()),
-            "US",            # plaintext — Google does not hash country
-            addr["zip5"],    # plaintext — Google does not hash zip
-        ]
-        out.append(cells)
-    write_rows(path, header, out)
-
-    maid_rows = [[r.get("maid1") or ""] for r in rows if (r.get("maid1") or "")]
-    write_rows(os.path.join(out_dir, "google_audience_maid.csv"), ["Mobile Device ID"], maid_rows)
+    total = written = 0
+    with open(contact_path, "w", encoding="utf-8", newline="") as cf, \
+         open(maid_path, "w", encoding="utf-8", newline="") as mf:
+        cf.write(csv_line(header))
+        mf.write(csv_line(["Mobile Device ID"]))
+        for r in rows:
+            total += 1
+            has_c = has_contact(r)
+            if has_c:
+                fn, ln = split_name(r.get("name1") or "")
+                addr = parse_address(r.get("address1") or "")
+                cells = []
+                for i in range(1, MAX_PER_TYPE + 1):
+                    e = r.get(f"email{i}") or ""
+                    cells.append(sha256_hex(email_lower_trim(e)) if e else "")
+                for i in range(1, MAX_PER_TYPE + 1):
+                    p = r.get(f"phone{i}") or ""
+                    cells.append(sha256_hex(phone_keep_plus(p)) if p else "")
+                cells += [
+                    sha256_hex(fn.strip().lower()),
+                    sha256_hex(ln.strip().lower()),
+                    "US",            # plaintext — Google does not hash country
+                    addr["zip5"],    # plaintext — Google does not hash zip
+                ]
+                cf.write(csv_line(cells))
+            if r.get("maid1") or "":
+                mf.write(csv_line([r.get("maid1") or ""]))
+            # Reachable by either path — the contact file or the device-ID file.
+            if has_required(r):
+                written += 1
+    return total, written
 
 
 USAGE = """usage: google.py [--help] [--list-identifiers]
@@ -158,12 +161,10 @@ def main(argv):
         return 2
 
     os.makedirs(args["out_dir"], exist_ok=True)
-    rows = read_watt_csv(args["input"])
-    written = sum(1 for r in rows if has_required(r))
-    write_google(rows, args["out_dir"])
-    skipped = len(rows) - written
+    total, written = write_google(read_watt_csv(args["input"]), args["out_dir"])
+    skipped = total - written
     note = f"; {skipped} skipped with no identifier Google can match" if skipped else ""
-    print(f"OK: wrote {written} of {len(rows)} persons to {args['out_dir']}{note}")
+    print(f"OK: wrote {written} of {total} persons to {args['out_dir']}{note}")
     return 0
 
 

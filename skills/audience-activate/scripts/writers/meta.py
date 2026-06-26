@@ -30,7 +30,7 @@ from _common import (
     any_phone,
     any_maid,
     read_watt_csv,
-    _csv_field,
+    csv_line,
 )
 
 # entity_find `domains` the Meta export needs materialized.
@@ -59,17 +59,9 @@ def has_required(row):
     return any_email(row) or any_phone(row) or any_maid(row)
 
 
-def write_csv(path, headers, rows):
-    """Write rows (dicts) as RFC 4180 CSV — CRLF line endings, minimal quoting."""
-    lines = [",".join(_csv_field(h) for h in headers)]
-    for r in rows:
-        lines.append(",".join(_csv_field(r.get(h, "")) for h in headers))
-    with open(path, "w", encoding="utf-8", newline="") as f:
-        f.write("\r\n".join(lines) + "\r\n")
-
-
 def write_meta(rows, out_dir):
-    """Write ``meta_audience.csv``.
+    """Stream ``meta_audience.csv``, returning ``(total, written)`` — persons
+    seen and persons with a matchable identifier.
 
     PII columns are SHA-256-hashed; ``madid`` rides raw (Meta's one unhashed
     match key). Each person explodes into one row per email/phone pair; a person
@@ -77,40 +69,48 @@ def write_meta(rows, out_dir):
     (Meta matches that). A person with none of the three is skipped, so the write
     path can never emit an all-empty row (Meta requires at least one identifier
     per row).
+
+    Rows are written as they're transformed — the input streams in from
+    ``read_watt_csv`` and each output row goes straight to the open file — so the
+    writer holds one person at a time, never the whole audience.
     """
     path = os.path.join(out_dir, "meta_audience.csv")
     headers = ["email", "phone", "fn", "ln", "country", "zip", "ct", "st", "external_id", "madid"]
-    out = []
-    for r in rows:
-        if not has_required(r):
-            continue
-        fn, ln = split_name(r.get("name1") or "")
-        addr = parse_address(r.get("address1") or "")
-        base = {
-            "fn": sha256_hex(fn.strip().lower()),
-            "ln": sha256_hex(ln.strip().lower()),
-            "country": sha256_hex("us"),
-            "zip": sha256_hex(addr["zip5"]) if addr["zip5"] else "",
-            "ct": sha256_hex(addr["city"].lower()) if addr["city"] else "",
-            "st": sha256_hex(addr["state"].lower()) if addr["state"] else "",
-            "external_id": sha256_hex(str(r.get("entity_id") or "")),
-            "madid": (r.get("maid1") or "").lower(),  # raw — Meta's one unhashed match key
-        }
-        emails, phones = [], []
-        for i in range(1, MAX_PER_TYPE + 1):
-            if r.get(f"email{i}"):
-                emails.append(sha256_hex(email_lower_trim(r[f"email{i}"])))
-            if r.get(f"phone{i}"):
-                phones.append(sha256_hex(phone_strip_plus(r[f"phone{i}"])))
-        madid = base["madid"]
-        for i in range(max(len(emails), len(phones), 1)):
-            row_out = dict(base)
-            row_out["email"] = emails[i] if i < len(emails) else ""
-            row_out["phone"] = phones[i] if i < len(phones) else ""
-            if not row_out["email"] and not row_out["phone"] and not madid:
+    total = written = 0
+    with open(path, "w", encoding="utf-8", newline="") as f:
+        f.write(csv_line(headers))
+        for r in rows:
+            total += 1
+            if not has_required(r):
                 continue
-            out.append(row_out)
-    write_csv(path, headers, out)
+            written += 1
+            fn, ln = split_name(r.get("name1") or "")
+            addr = parse_address(r.get("address1") or "")
+            base = {
+                "fn": sha256_hex(fn.strip().lower()),
+                "ln": sha256_hex(ln.strip().lower()),
+                "country": sha256_hex("us"),
+                "zip": sha256_hex(addr["zip5"]) if addr["zip5"] else "",
+                "ct": sha256_hex(addr["city"].lower()) if addr["city"] else "",
+                "st": sha256_hex(addr["state"].lower()) if addr["state"] else "",
+                "external_id": sha256_hex(str(r.get("entity_id") or "")),
+                "madid": (r.get("maid1") or "").lower(),  # raw — Meta's one unhashed match key
+            }
+            emails, phones = [], []
+            for i in range(1, MAX_PER_TYPE + 1):
+                if r.get(f"email{i}"):
+                    emails.append(sha256_hex(email_lower_trim(r[f"email{i}"])))
+                if r.get(f"phone{i}"):
+                    phones.append(sha256_hex(phone_strip_plus(r[f"phone{i}"])))
+            madid = base["madid"]
+            for i in range(max(len(emails), len(phones), 1)):
+                row_out = dict(base)
+                row_out["email"] = emails[i] if i < len(emails) else ""
+                row_out["phone"] = phones[i] if i < len(phones) else ""
+                if not row_out["email"] and not row_out["phone"] and not madid:
+                    continue
+                f.write(csv_line(row_out.get(h, "") for h in headers))
+    return total, written
 
 
 USAGE = """usage: meta.py [--help] [--list-identifiers]
@@ -156,12 +156,10 @@ def main(argv):
         return 2
 
     os.makedirs(args["out_dir"], exist_ok=True)
-    rows = read_watt_csv(args["input"])
-    written = sum(1 for r in rows if has_required(r))
-    write_meta(rows, args["out_dir"])
-    skipped = len(rows) - written
+    total, written = write_meta(read_watt_csv(args["input"]), args["out_dir"])
+    skipped = total - written
     note = f"; {skipped} skipped with no identifier Meta can match" if skipped else ""
-    print(f"OK: wrote {written} of {len(rows)} persons to {args['out_dir']}{note}")
+    print(f"OK: wrote {written} of {total} persons to {args['out_dir']}{note}")
     return 0
 
 

@@ -6,12 +6,16 @@ are byte-identical wherever they appear — the things that genuinely cannot
 differ between platforms:
 
   * primitives — ``sha256_hex`` (SHA-256 is SHA-256), ``_csv_field`` (RFC 4180
-    escaping is universal);
+    escaping is universal), ``csv_line`` (escape + join + CRLF — the one-line
+    assembly every writer streams a row through, equally universal);
   * input parsing — ``read_watt_csv``, ``parse_address``, ``split_name`` parse
     *Watt's* materialization schemas (the flat ``entity_find`` columns from the
     composition path **and** the nested ``entity_enrich`` columns from the roster
     path), normalizing both to the same flat row the writers read — the same for
-    every platform;
+    every platform. ``read_watt_csv`` **streams** — it yields one normalized row
+    at a time off the open file, so a writer holds a single row, never the whole
+    audience. Memory stays flat across the full 600K-row export budget, which is
+    what keeps a writer inside a bounded sandbox's memory;
   * presence checks — ``any_email`` / ``any_phone`` / ``any_maid`` over the
     fixed ``<type><1..MAX_PER_TYPE>`` columns;
   * ``MAX_PER_TYPE`` — the entity_find materialization count, a cross-writer
@@ -148,22 +152,30 @@ def _flatten_enrich_row(row):
 
 
 def read_watt_csv(path):
-    """Read a Watt CSV into flat column->value dicts.
+    """Stream a Watt CSV as flat column->value dicts — one row at a time.
+
+    A **generator**: it reads the header, then yields each data row off the open
+    file as it goes, never materializing the whole audience. So a writer's memory
+    stays flat across the full export budget — the input never lives in RAM as a
+    list. The file is held open for the life of the iteration; consume it to
+    completion (every writer does).
 
     Accepts both materialization schemas and normalizes to the flat
     ``<type><1..3>`` / ``name1`` / ``address1`` row the writers read: the
     ``entity_find`` CSV (composition export) as-is, the ``entity_enrich`` CSV
-    (roster export) flattened. Detected by header, per row.
+    (roster export) flattened. The schema is detected once from the header — both
+    materializations write a uniform header — so the per-row branch is a constant.
     """
     with open(path, "r", encoding="utf-8", newline="") as f:
-        raw = list(_csv.reader(f))
-    if not raw:
-        return []
-    header = raw[0]
-    rows = [{nm: (cells[i] if i < len(cells) else "") for i, nm in enumerate(header)} for cells in raw[1:]]
-    if any(_ENRICH_COL.match(h) for h in header):
-        rows = [_flatten_enrich_row(r) for r in rows]
-    return rows
+        reader = _csv.reader(f)
+        try:
+            header = next(reader)
+        except StopIteration:
+            return
+        is_enrich = any(_ENRICH_COL.match(h) for h in header)
+        for cells in reader:
+            row = {nm: (cells[i] if i < len(cells) else "") for i, nm in enumerate(header)}
+            yield _flatten_enrich_row(row) if is_enrich else row
 
 
 def _csv_field(v):
@@ -171,3 +183,10 @@ def _csv_field(v):
     if any(c in v for c in ('"', ",", "\r", "\n")):
         return '"' + v.replace('"', '""') + '"'
     return v
+
+
+def csv_line(cells):
+    """Assemble one RFC 4180 record: escape each cell, join on commas, terminate
+    with CRLF. The single row-assembly primitive every writer streams through, so
+    escaping and line endings can't drift between platforms."""
+    return ",".join(_csv_field(c) for c in cells) + "\r\n"
