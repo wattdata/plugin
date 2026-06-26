@@ -13,7 +13,7 @@ Where *greedy* assembles to a size band and *broad* ORs for maximum reach, you o
 
 ## Inputs
 
-- **`working_set`** *(required)* — the already-scored candidate pool, in scored order. Per signal at minimum `trait_hash`, `name`, `role`, `score` (the `signal-profiler` composite), `size`, and `freshness` (the profiler's recency axis). Roles:
+- **`working_set`** *(required)* — the already-scored candidate pool, in scored order. Per signal at minimum `trait_hash`, `name`, `role`, `score` (the `signal-profiler` composite), `size`, `prevalence` (the `signal-profiler` fraction — the share of the addressable base that carries the trait; this is each candidate's own world baseline for lift, carried so no universe count is needed — see step 3), and `freshness` (the profiler's recency axis). Roles:
   - **`must_have`** → the **base**: ANDed together, this is the audience you measure lift *against* and the reference the whole strategy turns on. **At least one is mandatory** — with no base there's nothing to lift over (`status: "no_base"`).
   - **`core`** → the **candidates**: the pool you rank by lift-over-base and pick from.
   - **`exclusion`** → `AND NOT` on the base, always applied.
@@ -41,9 +41,8 @@ A single structured object — this is your entire output. No surrounding prose.
     "expression_string": "<hash> AND <hash> AND NOT <hash>",
     "reach": 4200000
   },
-  "universe": 258000000,
   "lift_ranked": [
-    { "trait_hash": "…", "name": "…", "size": 900000, "reach_with_base": 540000, "lift": 4.7, "freshness": 0.81, "picked": true }
+    { "trait_hash": "…", "name": "…", "size": 900000, "prevalence": 0.0035, "reach_with_base": 540000, "lift": 4.7, "freshness": 0.81, "picked": true }
   ],
   "picked": ["<trait_hash>"],
   "output_mode": "tighten",
@@ -55,7 +54,7 @@ A single structured object — this is your entire output. No surrounding prose.
   "reach_floor": 1000,
   "sample_entity_ids": ["…"],
   "workflow_id": "…",
-  "note": "only when status ≠ ok, or to carry a caveat (e.g. propensity is structural, not per-individual; lift values relative if the universe count was unavailable)"
+  "note": "only when status ≠ ok, or to carry a caveat (e.g. propensity is structural, not per-individual; the lift multiple is approximate — measured reach and published prevalence sit on slightly different scales; a candidate lacking a usable prevalence was ranked on the size fallback)"
 }
 ```
 
@@ -69,11 +68,11 @@ Narrate each probe in plain English as you go (e.g. "Base 'Homeowner AND In-mark
 
 2. **Build and measure the base.** Form `must_all AND NOT exclusions`, apply `location` if given, measure reach with a no-materialization find (`entity_find`, `format:"none"`, no `domains`, read `total`). If `reach(base) < reach_floor`, stop: `status: "base_below_floor"` — there's no meaningful base to lift over; return with the leverage.
 
-3. **Establish the ranking basis.** Rank on `reach_with_base / size(s)` — exact and **independent of any universe count** (it's the share of a signal's people who fall in the base, which orders candidates identically to lift). A true world-multiple lift additionally needs `U`, the addressable person count: attempt one unconstrained count (`entity_find`, no expression, no location, `format:"none"`, read `total`) and, if it returns, set `universe` and report lift as that multiple. Many graphs **reject an unconstrained count** (`INVALID_PARAMS`) — when so, leave `universe: null` and report lift on the `reach_with_base / size` basis, saying so in `note`. Ranking and picks are identical either way.
+3. **Establish the lift baseline — each candidate's own `prevalence`.** Lift over the base is `[reach_with_base / reach(base)] / prevalence(s)`: the share of base-members carrying `s`, over `s`'s own world prevalence — the `signal-profiler` fraction already in the working set. Since `prevalence(s)` **is** `size(s) / U` by the model's own algebra, the candidate's published prevalence is its baseline directly, and **no universe count is needed.** Never issue a bare, signal-less `entity_find`: the server rejects a query with no search criterion (`INVALID_PARAMS`), so a count-everyone probe does not exist — the universe term is gone, not worked around. A candidate carrying no usable `prevalence` (absent, or not `0 < prevalence ≤ 1`) can't take an absolute multiple — rank it on the `reach_with_base / size(s)` fallback and flag it in `note`; never guess a baseline.
 
 4. **Score each candidate's lift over the base.** For each `core` candidate `s`, one probe yields `reach_with_base` = reach(base AND s) (same counting find, `location` if given). Then
-   `lift(s | base) = [reach_with_base / reach(base)] / [size(s) / U]`.
-   Rank descending by lift — equivalently by `reach(base AND s) / size(s)`, which is **exact regardless of `U` or `reach(base)`** (both constant across candidates), so the ranking holds even when `U` is unavailable. Break ties toward higher `freshness`; if the caller set a freshness floor, candidates under it are dropped (recorded). A candidate with `lift ≤ 1` is not over-represented in the base — it is never picked.
+   `lift(s | base) = [reach_with_base / reach(base)] / prevalence(s)`.
+   Rank descending by lift — equivalently by `reach_with_base / prevalence(s)` (`reach(base)` is constant across candidates), each candidate measured against its **own** base rate, so a mixed-domain pool is ranked correctly without a shared universe. Break ties toward higher `freshness`; if the caller set a freshness floor, candidates under it are dropped (recorded). A candidate with `lift ≤ 1` is not over-represented in the base — it is never picked. Carry `prevalence` and `lift` on every `lift_ranked` row so the basis is auditable. The multiple is honest but approximate — measured `reach` runs a little under the trait's published `size`, and prevalence is the graph's model fraction, not a counted ratio; never present it as exact.
 
 5. **Pick the high-lift few.** Apply `select` (default top-`n`; or all with `lift ≥ min_lift`). If no candidate clears `lift > 1` (or the threshold), `status: "no_lift_candidates"`: nothing lifts the base — return the base as the only honest stack and say so.
 
@@ -81,12 +80,12 @@ Narrate each probe in plain English as you go (e.g. "Base 'Homeowner AND In-mark
 
 7. **Return the evidence.** From the final probe's sample keep **entity IDs only** (discard every other column — records are the activator's lane). Capture the `workflow_id` so the stack re-materializes deterministically. Every `reach` is a measured `total`, never arithmetic over per-signal sizes.
 
-8. **A probe error halts the work.** Surface the failing expression and the server's message; never substitute a guessed reach, lift, or universe.
+8. **A probe error halts the work.** Surface the failing expression and the server's message; never substitute a guessed reach or lift.
 
 ## Guardrails
 
 - **The base is mandatory.** It's both the lift reference and the structural anchor that keeps this from rewarding profile saturation. No `must_have` → `no_base`, every time.
-- **Lift is counts-based over the base, from measured reach — never `calculate_trait_lift`.** Intent signals have no world baseline in that tool (verified), so it cannot rank them; you compute lift from `reach(base AND s)`, `reach(base)`, `size(s)`, and `U`. Never hand-estimate a lift, never invent a reach.
+- **Lift is counts-based over the base, from measured reach — never `calculate_trait_lift`.** Intent signals have no world baseline in that tool (verified), so it cannot rank them; you compute lift from `reach(base AND s)`, `reach(base)`, and the candidate's own `prevalence`. No universe count exists to fetch — a signal-less `entity_find` is rejected — and none is needed, since each candidate's published prevalence is its baseline. Never hand-estimate a lift, never invent a reach, never guess a prevalence.
 - **The working set is the user's.** You pick within the approved pool by lift; you never add a signal, re-rank its membership, resurrect an exclusion, or invent a hash. If nothing lifts the base, that's a finding, not a license to improvise.
 - **Reach is measured, never derived.** Per-signal sizes overlap; only the probe's `total` is the truth about a combination.
 - **Never hide the score.** `lift_ranked` carries every candidate's lift over the base and its `picked` flag; why X was chosen over Y is answerable from the return.

@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.15.0] - 2026-06-26
+
+### Improved
+- Picking a Watt session back up is faster — it no longer reloads context it already has, so you're not waiting on a rebuild when you return to a session mid-task.
+- Audience exports to Meta, Google, and Reddit now cover your whole audience at any size — the export pulls it in batches and pages through all of it, so a multi-million-person audience lands as one complete file.
+- After an export, you can add mobile-ad IDs (device IDs) as a second pass — folded into the same audience on Meta, Google, and Reddit, reliably at any audience size, all the way to the largest runs.
+- Audience exports to Meta, Google, and Reddit now pull in lighter batches, so large exports run faster and finish more reliably.
+
+### Fixed
+- Building a high-intent (precision) audience now consistently shows how strongly each signal concentrates your audience as a clear multiple over its normal rate, instead of sometimes falling back to a hard-to-read relative figure.
+- `/watt:explore` and `/watt:audience` no longer pause while a step locates the plugin's own tools — scoring, profiling, and exporting an audience reach what they need directly on every surface, so results come back without the stall.
+
 ## [0.14.2] - 2026-06-25
 
 ### Fixed

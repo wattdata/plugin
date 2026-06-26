@@ -30,11 +30,20 @@ from _common import (
     any_phone,
     any_maid,
     read_watt_csv,
+    read_watt_csv_with_maid,
     csv_line,
+    contact_window_cap,
+    MAID_WINDOW_CAP,
 )
 
-# entity_find `domains` the Google export needs materialized.
-IDENTIFIERS = ["email", "phone", "name", "address", "maid"]
+# The contact-lane domains the Google export materializes together — everything
+# but the device ID. ``maid`` is the heavy domain, so it is NOT pulled here: it
+# rides its own lane and is merged back onto each person by entity_id, where
+# write_google writes it raw to the separate ``google_audience_maid.csv`` (a
+# device-ID-only person appears only in that file). The two lanes reunite into
+# one flat row, so the transform below is unchanged.
+IDENTIFIERS = ["email", "phone", "name", "address"]
+USES_MAID = True
 
 
 # ----- Google normalization policy -----
@@ -118,11 +127,18 @@ def write_google(rows, out_dir):
     return total, written
 
 
-USAGE = """usage: google.py [--help] [--list-identifiers]
-                 [--input CSV --out-dir DIR]
+USAGE = """usage: google.py [--help] [--list-identifiers] [--export-cap]
+                 [--uses-maid] [--maid-cap]
+                 [--input CSV [--maid-input CSV] --out-dir DIR]
 
-  --list-identifiers  Print the entity_find domains this writer needs and exit.
-  --input CSV         Materialized audience CSV (Watt v2 entity_find schema).
+  --list-identifiers  Print the contact-lane entity_find domains this writer
+                      needs and exit (the device ID rides its own lane).
+  --export-cap        Print the contact-lane batch window — the export pages
+                      the full audience this many people at a time — and exit.
+  --uses-maid         Print "true"/"false" — whether a device-ID lane applies.
+  --maid-cap          Print the maid lane's per-window ceiling, and exit.
+  --input CSV         Materialized contact-lane CSV (Watt entity_find schema).
+  --maid-input CSV    Optional maid-lane CSV; merged onto --input by entity_id.
   --out-dir DIR       Output directory for the platform file(s).
 
   A person with no identifier Google can match produces no row. The reported
@@ -132,7 +148,8 @@ USAGE = """usage: google.py [--help] [--list-identifiers]
 
 
 def main(argv):
-    args = {"list_identifiers": False, "input": "", "out_dir": ""}
+    args = {"list_identifiers": False, "export_cap": False, "uses_maid": False,
+            "maid_cap": False, "input": "", "maid_input": "", "out_dir": ""}
     i = 0
     while i < len(argv):
         a = argv[i]
@@ -141,9 +158,18 @@ def main(argv):
             return 0
         elif a == "--list-identifiers":
             args["list_identifiers"] = True
+        elif a == "--export-cap":
+            args["export_cap"] = True
+        elif a == "--uses-maid":
+            args["uses_maid"] = True
+        elif a == "--maid-cap":
+            args["maid_cap"] = True
         elif a == "--input":
             i += 1
             args["input"] = argv[i] if i < len(argv) else ""
+        elif a == "--maid-input":
+            i += 1
+            args["maid_input"] = argv[i] if i < len(argv) else ""
         elif a == "--out-dir":
             i += 1
             args["out_dir"] = argv[i] if i < len(argv) else ""
@@ -156,12 +182,26 @@ def main(argv):
         print(",".join(IDENTIFIERS))
         return 0
 
+    if args["export_cap"]:
+        print(contact_window_cap(len(IDENTIFIERS)))
+        return 0
+
+    if args["uses_maid"]:
+        print("true" if USES_MAID else "false")
+        return 0
+
+    if args["maid_cap"]:
+        print(MAID_WINDOW_CAP)
+        return 0
+
     if not (args["input"] and args["out_dir"]):
         print(f"Provide either --list-identifiers, or both --input and --out-dir.\n{USAGE}", file=sys.stderr)
         return 2
 
     os.makedirs(args["out_dir"], exist_ok=True)
-    total, written = write_google(read_watt_csv(args["input"]), args["out_dir"])
+    rows = (read_watt_csv_with_maid(args["input"], args["maid_input"])
+            if args["maid_input"] else read_watt_csv(args["input"]))
+    total, written = write_google(rows, args["out_dir"])
     skipped = total - written
     note = f"; {skipped} skipped with no identifier Google can match" if skipped else ""
     print(f"OK: wrote {written} of {total} persons to {args['out_dir']}{note}")

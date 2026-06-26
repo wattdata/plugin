@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
-"""SubagentStop activity marker for the Watt plugin.
+"""SubagentStart/Stop activity hook for the Watt plugin.
 
-Emits one short, voiced completion line when a Watt advisor or worker finishes,
-so the close of each dispatch reads as activity rather than an opaque pause.
+On START: publishes the resolved bundle root into the subagent's context. The
+subagent's shell does not get $CLAUDE_PLUGIN_ROOT, so a script path built from
+that variable reads nothing; this injects the absolute path the subagent
+substitutes for it, resolved from this script's own location (mirrors
+render-guard.py). It is model context only — the user-visible spawn line is
+owned by the per-matcher ``statusMessage`` strings in hooks.json (each names, in
+plain customer language, what that advisor is doing), and the internal worker
+name (signal-finder, strategy-greedy, audience-resolver, …) must never reach the
+user.
 
-Spawn announcements are owned by the per-matcher ``statusMessage`` strings in
-hooks.json — each names, in plain customer language, what that advisor is doing
-("Watt: composing toward your size band…", "Watt: reading who this audience
-reaches…"). They already cover every wired advisor. So this hook deliberately
-adds *nothing* on ``start``: a second spawn line would only duplicate that
-statusMessage, and — critically — the internal worker name (signal-finder,
-strategy-greedy, audience-resolver, …) must never reach the user, who speaks in
-signals and audiences, not worker names. The completion marker is therefore
-generic and name-free by design.
+On STOP: emits one short, voiced completion line so the close of each dispatch
+reads as activity rather than an opaque pause. Generic and name-free by design,
+for the same reason.
 
 Python, not bash: it drains a JSON payload on stdin and emits JSON on stdout —
 json.dumps guarantees well-formed output where hand-rolled echo/printf would
@@ -22,6 +23,7 @@ Cowork runtime; jq is not guaranteed.
 Usage: subagent-activity.py <start|stop>   (phase passed from hooks.json)
 """
 import json
+import os
 import sys
 
 phase = sys.argv[1] if len(sys.argv) > 1 else "start"
@@ -33,13 +35,40 @@ try:
 except Exception:
     pass
 
-# On start there is nothing to add — hooks.json's voiced statusMessage already
-# announces the spawn. Only the stop phase emits a marker.
-if phase != "stop":
+if phase == "start":
+    # Resolve the bundle root from this script's own path (reliable wherever the
+    # hook runs from the mounted bundle); fall back to the env var only if that
+    # misses. Publish it as the subagent's substitute for ${CLAUDE_PLUGIN_ROOT}.
+    root = os.path.abspath(
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
+    )
+    if not os.path.isdir(os.path.join(root, "scripts")):
+        root = os.environ.get("CLAUDE_PLUGIN_ROOT", root)
+    sys.stdout.write(
+        json.dumps(
+            {
+                "hookSpecificOutput": {
+                    "hookEventName": "SubagentStart",
+                    "additionalContext": (
+                        "Watt bundle root: " + root + "\n"
+                        "Wherever a Watt instruction writes ${CLAUDE_PLUGIN_ROOT}, use this "
+                        "absolute path in its place — the variable is not set in your shell, "
+                        "so an unexpanded ${CLAUDE_PLUGIN_ROOT} reads nothing. Reach bundled "
+                        'scripts here through the shell, e.g. python3 "'
+                        + root
+                        + '/scripts/<file>.py".'
+                    ),
+                }
+            },
+            ensure_ascii=False,
+        )
+        + "\n"
+    )
     sys.exit(0)
 
-# systemMessage is the user-visible channel; hookSpecificOutput.hookEventName
-# identifies the event back to the harness. The line never names the worker.
+# Stop phase: the completion marker. systemMessage is the user-visible channel;
+# hookSpecificOutput.hookEventName identifies the event back to the harness. The
+# line never names the worker.
 sys.stdout.write(
     json.dumps(
         {
