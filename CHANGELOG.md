@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.14.2] - 2026-06-25
+
+### Fixed
+- Large audience exports to Meta, Google, and Reddit now finish and write the complete file every time, all the way to the largest run size — a big export lands the whole file instead of coming back empty.
+- Audience exports to Meta, Google, and Reddit now run reliably on Claude Cowork — the export locates and runs its platform writer script the same way the rest of the export already works, so your file is produced promptly.
+- `/watt:help` now reliably grounds its "how does X work" answers in how Watt actually works, on every surface — so explanations of how an audience is built come back with full depth instead of the broad strokes.
+
 ## [0.14.1] - 2026-06-24
 
 ### Fixed

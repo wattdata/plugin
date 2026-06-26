@@ -28,7 +28,7 @@ from _common import (
     any_email,
     any_maid,
     read_watt_csv,
-    _csv_field,
+    csv_line,
 )
 
 # entity_find `domains` the Reddit export needs materialized.
@@ -58,38 +58,38 @@ def has_required(row):
     return any_email(row) or any_maid(row)
 
 
-def write_rows(path, header_row, rows):
-    """Write positional rows (lists of cells) as RFC 4180 CSV — CRLF line
-    endings, minimal quoting. The header row is mandatory — Reddit keys the
-    upload on its exact column names."""
-    lines = [",".join(_csv_field(h) for h in header_row)]
-    for cells in rows:
-        lines.append(",".join(_csv_field(c) for c in cells))
-    with open(path, "w", encoding="utf-8", newline="") as f:
-        f.write("\r\n".join(lines) + "\r\n")
-
-
 def write_reddit(rows, out_dir):
-    """Write ``reddit_audience.csv`` — one combined file, the template header,
-    one identifier per row.
+    """Stream ``reddit_audience.csv`` — one combined file, the template header,
+    one identifier per row — returning ``(total, written)`` — persons seen and
+    persons with a matchable identifier.
 
     Emails explode one row per email per person, SHA-256-hashed into the hashed
     column; the unhashed-email column stays empty. The device ID rides raw in
     its own column — the top-quality device ID per person. A person with no
     identifier Reddit can match is skipped, so the write path can never emit an
     all-empty row.
+
+    Rows are written as the input streams through — the writer holds one person
+    at a time, never the whole audience. The header is mandatory; Reddit keys the
+    upload on its exact column names.
     """
-    rows = [r for r in rows if has_required(r)]
-    out = []
-    for r in rows:
-        for i in range(1, MAX_PER_TYPE + 1):
-            e = r.get(f"email{i}") or ""
-            if e:
-                out.append([sha256_hex(email_lower_trim(e)), "", ""])
-        m = r.get("maid1") or ""
-        if m:
-            out.append(["", "", maid_raw(m)])
-    write_rows(os.path.join(out_dir, "reddit_audience.csv"), HEADER, out)
+    path = os.path.join(out_dir, "reddit_audience.csv")
+    total = written = 0
+    with open(path, "w", encoding="utf-8", newline="") as f:
+        f.write(csv_line(HEADER))
+        for r in rows:
+            total += 1
+            if not has_required(r):
+                continue
+            written += 1
+            for i in range(1, MAX_PER_TYPE + 1):
+                e = r.get(f"email{i}") or ""
+                if e:
+                    f.write(csv_line([sha256_hex(email_lower_trim(e)), "", ""]))
+            m = r.get("maid1") or ""
+            if m:
+                f.write(csv_line(["", "", maid_raw(m)]))
+    return total, written
 
 
 USAGE = """usage: reddit.py [--help] [--list-identifiers]
@@ -135,12 +135,10 @@ def main(argv):
         return 2
 
     os.makedirs(args["out_dir"], exist_ok=True)
-    rows = read_watt_csv(args["input"])
-    written = sum(1 for r in rows if has_required(r))
-    write_reddit(rows, args["out_dir"])
-    skipped = len(rows) - written
+    total, written = write_reddit(read_watt_csv(args["input"]), args["out_dir"])
+    skipped = total - written
     note = f"; {skipped} skipped with no identifier Reddit can match" if skipped else ""
-    print(f"OK: wrote {written} of {len(rows)} persons to {args['out_dir']}{note}")
+    print(f"OK: wrote {written} of {total} persons to {args['out_dir']}{note}")
     return 0
 
 
